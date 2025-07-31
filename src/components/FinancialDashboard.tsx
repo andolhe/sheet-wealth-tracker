@@ -499,7 +499,7 @@ const FinancialDashboard = () => {
                         <div className="grid grid-cols-3 gap-4 text-xs text-muted-foreground">
                           <div>USD/BRL: {week.rates.usdToBrl}</div>
                           <div>EUR/BRL: {week.rates.eurToBrl}</div>
-                          <div>BTC/USD: {week.rates.btcToUsd.toLocaleString('en-US')}</div>
+                          <div>BTC/USD: {week.rates.btcToUsd?.toLocaleString('en-US') || 'N/A'}</div>
                         </div>
                       </div>
                     ))}
