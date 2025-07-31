@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, TrendingDown, Settings, DollarSign, Euro, Banknote } from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, Settings, DollarSign, Euro, Banknote, Minus } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import FinancialDashboard from './FinancialDashboard';
 
 interface WeeklyData {
@@ -29,6 +30,7 @@ export const PortfolioSummary = () => {
   const [showDetailed, setShowDetailed] = useState(false);
   const [latestWeek, setLatestWeek] = useState<WeeklyData | null>(null);
   const [previousWeek, setPreviousWeek] = useState<WeeklyData | null>(null);
+  const [allWeeks, setAllWeeks] = useState<WeeklyData[]>([]);
 
   useEffect(() => {
     const savedWeeks = localStorage.getItem('financialWeeks');
@@ -36,33 +38,72 @@ export const PortfolioSummary = () => {
       const weeks: WeeklyData[] = JSON.parse(savedWeeks);
       if (weeks.length > 0) {
         const sorted = weeks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setAllWeeks(sorted);
         setLatestWeek(sorted[0]);
         if (sorted.length > 1) {
           setPreviousWeek(sorted[1]);
         }
       }
     } else {
-      // Generate demo data for visualization
-      const demoData: WeeklyData = {
-        id: 'demo-week-1',
-        date: new Date().toISOString().split('T')[0],
-        rates: {
-          usdToBrl: 5.55,
-          eurToBrl: 6.15,
-          btcToUsd: 67500
+      // Generate demo data for visualization - multiple weeks
+      const demoWeeks: WeeklyData[] = [
+        {
+          id: 'demo-week-4',
+          date: new Date().toISOString().split('T')[0],
+          rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToUsd: 67500 },
+          accounts: [
+            { id: '1', name: 'BYBIT MAIN', usd: 75000, brl: 0, eur: 0 },
+            { id: '2', name: 'BINANCE', usd: 45000, brl: 0, eur: 0 },
+            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 85000, eur: 0 },
+            { id: '4', name: 'WISE', usd: 15000, brl: 25000, eur: 8000 },
+            { id: '5', name: 'ANDOLKER LLC', usd: 35000, brl: 50000, eur: 12000 }
+          ],
+          totalUsd: 170000, totalBrl: 160000, totalEur: 20000
         },
-        accounts: [
-          { id: '1', name: 'BYBIT MAIN', usd: 75000, brl: 0, eur: 0 },
-          { id: '2', name: 'BINANCE', usd: 45000, brl: 0, eur: 0 },
-          { id: '3', name: 'BRADESCO BR', usd: 0, brl: 85000, eur: 0 },
-          { id: '4', name: 'WISE', usd: 15000, brl: 25000, eur: 8000 },
-          { id: '5', name: 'ANDOLKER LLC', usd: 35000, brl: 50000, eur: 12000 }
-        ],
-        totalUsd: 170000,
-        totalBrl: 160000,
-        totalEur: 20000
-      };
-      setLatestWeek(demoData);
+        {
+          id: 'demo-week-3',
+          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          rates: { usdToBrl: 5.48, eurToBrl: 6.08, btcToUsd: 65200 },
+          accounts: [
+            { id: '1', name: 'BYBIT MAIN', usd: 72000, brl: 0, eur: 0 },
+            { id: '2', name: 'BINANCE', usd: 43000, brl: 0, eur: 0 },
+            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 82000, eur: 0 },
+            { id: '4', name: 'WISE', usd: 14000, brl: 23000, eur: 7500 },
+            { id: '5', name: 'ANDOLKER LLC', usd: 33000, brl: 48000, eur: 11500 }
+          ],
+          totalUsd: 162000, totalBrl: 153000, totalEur: 19000
+        },
+        {
+          id: 'demo-week-2',
+          date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          rates: { usdToBrl: 5.62, eurToBrl: 6.22, btcToUsd: 63800 },
+          accounts: [
+            { id: '1', name: 'BYBIT MAIN', usd: 68000, brl: 0, eur: 0 },
+            { id: '2', name: 'BINANCE', usd: 40000, brl: 0, eur: 0 },
+            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 78000, eur: 0 },
+            { id: '4', name: 'WISE', usd: 13000, brl: 20000, eur: 7000 },
+            { id: '5', name: 'ANDOLKER LLC', usd: 30000, brl: 45000, eur: 10000 }
+          ],
+          totalUsd: 151000, totalBrl: 143000, totalEur: 17000
+        },
+        {
+          id: 'demo-week-1',
+          date: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          rates: { usdToBrl: 5.71, eurToBrl: 6.35, btcToUsd: 61500 },
+          accounts: [
+            { id: '1', name: 'BYBIT MAIN', usd: 65000, brl: 0, eur: 0 },
+            { id: '2', name: 'BINANCE', usd: 38000, brl: 0, eur: 0 },
+            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 75000, eur: 0 },
+            { id: '4', name: 'WISE', usd: 12000, brl: 18000, eur: 6500 },
+            { id: '5', name: 'ANDOLKER LLC', usd: 28000, brl: 42000, eur: 9500 }
+          ],
+          totalUsd: 143000, totalBrl: 135000, totalEur: 16000
+        }
+      ];
+      
+      setAllWeeks(demoWeeks);
+      setLatestWeek(demoWeeks[0]);
+      setPreviousWeek(demoWeeks[1]);
     }
   }, []);
 
@@ -118,6 +159,45 @@ export const PortfolioSummary = () => {
   const currentTotalUsd = getTotalPortfolioInUsd();
   const currentTotalEur = getTotalPortfolioInEur();
 
+  // Calculate trends
+  const getTrend = (current: number, previous: number) => {
+    if (!previous) return { value: 0, direction: 'none' as const };
+    const change = ((current - previous) / previous) * 100;
+    return {
+      value: Math.abs(change),
+      direction: change > 0 ? 'up' as const : change < 0 ? 'down' as const : 'none' as const
+    };
+  };
+
+  const getPreviousTotalInBrl = () => {
+    if (!previousWeek) return 0;
+    return previousWeek.totalBrl + 
+           (previousWeek.totalUsd * previousWeek.rates.usdToBrl) + 
+           (previousWeek.totalEur * previousWeek.rates.eurToBrl);
+  };
+
+  const trendBrl = getTrend(currentTotalBrl, getPreviousTotalInBrl());
+
+  // Prepare chart data
+  const chartData = allWeeks
+    .slice()
+    .reverse()
+    .map(week => {
+      const totalInBrl = week.totalBrl + 
+                        (week.totalUsd * week.rates.usdToBrl) + 
+                        (week.totalEur * week.rates.eurToBrl);
+      return {
+        week: new Date(week.date).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' }),
+        total: totalInBrl
+      };
+    });
+
+  const TrendIcon = ({ direction }: { direction: 'up' | 'down' | 'none' }) => {
+    if (direction === 'up') return <TrendingUp className="h-4 w-4 text-green-500" />;
+    if (direction === 'down') return <TrendingDown className="h-4 w-4 text-red-500" />;
+    return <Minus className="h-4 w-4 text-muted-foreground" />;
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
@@ -140,7 +220,20 @@ export const PortfolioSummary = () => {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <h2 className="text-sm text-muted-foreground mb-2">Total em BRL</h2>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <h2 className="text-sm text-muted-foreground">Total em BRL</h2>
+                  {previousWeek && (
+                    <div className="flex items-center gap-1">
+                      <TrendIcon direction={trendBrl.direction} />
+                      <span className={`text-xs ${
+                        trendBrl.direction === 'up' ? 'text-green-500' : 
+                        trendBrl.direction === 'down' ? 'text-red-500' : 'text-muted-foreground'
+                      }`}>
+                        {trendBrl.value.toFixed(1)}%
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <div className="text-2xl font-bold text-primary">
                   {formatCurrency(currentTotalBrl, 'BRL')}
                 </div>
@@ -209,6 +302,46 @@ export const PortfolioSummary = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Portfolio Evolution Chart */}
+        {chartData.length > 1 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Evolução do Portfolio (BRL)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <XAxis 
+                      dataKey="week" 
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="total" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={3}
+                      dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Current Exchange Rates */}
         <Card>
