@@ -224,6 +224,17 @@ export const PortfolioSummary = () => {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
+                <h2 className="text-sm text-muted-foreground mb-2">Total em USD</h2>
+                <div className="text-2xl font-bold text-primary">
+                  {formatCurrency(currentTotalUsd, 'USD')}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <h2 className="text-sm text-muted-foreground">Total em BRL</h2>
                   {previousWeek && (
@@ -240,17 +251,6 @@ export const PortfolioSummary = () => {
                 </div>
                 <div className="text-2xl font-bold text-primary">
                   {formatCurrency(currentTotalBrl, 'BRL')}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center">
-                <h2 className="text-sm text-muted-foreground mb-2">Total em USD</h2>
-                <div className="text-2xl font-bold text-primary">
-                  {formatCurrency(currentTotalUsd, 'USD')}
                 </div>
               </div>
             </CardContent>
