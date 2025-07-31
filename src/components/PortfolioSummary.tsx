@@ -102,7 +102,21 @@ export const PortfolioSummary = () => {
            (latestWeek.totalEur * latestWeek.rates.eurToBrl);
   };
 
-  const currentTotal = getTotalPortfolioInBrl();
+  const getTotalPortfolioInUsd = () => {
+    return (latestWeek.totalBrl / latestWeek.rates.usdToBrl) + 
+           latestWeek.totalUsd + 
+           (latestWeek.totalEur * latestWeek.rates.eurToBrl / latestWeek.rates.usdToBrl);
+  };
+
+  const getTotalPortfolioInEur = () => {
+    return (latestWeek.totalBrl / latestWeek.rates.eurToBrl) + 
+           (latestWeek.totalUsd * latestWeek.rates.usdToBrl / latestWeek.rates.eurToBrl) + 
+           latestWeek.totalEur;
+  };
+
+  const currentTotalBrl = getTotalPortfolioInBrl();
+  const currentTotalUsd = getTotalPortfolioInUsd();
+  const currentTotalEur = getTotalPortfolioInEur();
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -121,17 +135,41 @@ export const PortfolioSummary = () => {
           </Button>
         </div>
 
-        {/* Total Portfolio */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <h2 className="text-lg text-muted-foreground mb-2">Total Portfolio</h2>
-              <div className="text-3xl font-bold text-primary">
-                {formatCurrency(currentTotal, 'BRL')}
+        {/* Total Portfolio in All Currencies */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <h2 className="text-sm text-muted-foreground mb-2">Total em BRL</h2>
+                <div className="text-2xl font-bold text-primary">
+                  {formatCurrency(currentTotalBrl, 'BRL')}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <h2 className="text-sm text-muted-foreground mb-2">Total em USD</h2>
+                <div className="text-2xl font-bold text-primary">
+                  {formatCurrency(currentTotalUsd, 'USD')}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <h2 className="text-sm text-muted-foreground mb-2">Total em EUR</h2>
+                <div className="text-2xl font-bold text-primary">
+                  {formatCurrency(currentTotalEur, 'EUR')}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Current Balances */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
