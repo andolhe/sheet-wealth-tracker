@@ -356,10 +356,10 @@ export const PortfolioSummary = () => {
                       yAxisId="usd"
                       type="monotone" 
                       dataKey="totalUsd" 
-                      stroke="hsl(var(--secondary))" 
+                      stroke="hsl(142, 76%, 36%)" 
                       strokeWidth={3}
-                      dot={{ fill: "hsl(var(--secondary))", strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, stroke: "hsl(var(--secondary))", strokeWidth: 2 }}
+                      dot={{ fill: "hsl(142, 76%, 36%)", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, stroke: "hsl(142, 76%, 36%)", strokeWidth: 2 }}
                       name="USD"
                     />
                   </LineChart>
