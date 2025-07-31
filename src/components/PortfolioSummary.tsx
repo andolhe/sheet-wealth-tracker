@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, TrendingDown, Settings, DollarSign, Euro, Banknote, Minus } from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, Settings, DollarSign, Euro, Banknote, Minus, Trash2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { useToast } from '@/hooks/use-toast';
 import FinancialDashboard from './FinancialDashboard';
 
 interface WeeklyData {
@@ -27,10 +28,23 @@ interface WeeklyData {
 }
 
 export const PortfolioSummary = () => {
+  const { toast } = useToast();
   const [showDetailed, setShowDetailed] = useState(false);
   const [latestWeek, setLatestWeek] = useState<WeeklyData | null>(null);
   const [previousWeek, setPreviousWeek] = useState<WeeklyData | null>(null);
   const [allWeeks, setAllWeeks] = useState<WeeklyData[]>([]);
+
+  const clearAllData = () => {
+    localStorage.removeItem('financialWeeks');
+    setAllWeeks([]);
+    setLatestWeek(null);
+    setPreviousWeek(null);
+    
+    toast({
+      title: "Todos os dados foram limpos!",
+      description: "Todos os dados financeiros foram permanentemente removidos.",
+    });
+  };
 
   useEffect(() => {
     const savedWeeks = localStorage.getItem('financialWeeks');
@@ -213,10 +227,16 @@ export const PortfolioSummary = () => {
               {new Date(latestWeek.date).toLocaleDateString('pt-BR')}
             </p>
           </div>
-          <Button onClick={() => setShowDetailed(true)} className="gap-2">
-            <Settings className="h-4 w-4" />
-            Manage Portfolio
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={clearAllData} variant="destructive" className="gap-2">
+              <Trash2 className="h-4 w-4" />
+              Limpar Dados
+            </Button>
+            <Button onClick={() => setShowDetailed(true)} className="gap-2">
+              <Settings className="h-4 w-4" />
+              Manage Portfolio
+            </Button>
+          </div>
         </div>
 
         {/* Total Portfolio in All Currencies */}
