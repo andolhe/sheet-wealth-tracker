@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AnalyticsDashboard from './AnalyticsDashboard';
 
@@ -313,10 +314,20 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
               <BarChart3 className="h-4 w-4" />
               Analytics
             </Button>
-            <Button onClick={clearAllData} variant="destructive" className="gap-2">
-              <Trash2 className="h-4 w-4" />
-              Clear All Data
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={clearAllData} className="text-destructive focus:text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear All Data
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button onClick={saveCurrentWeek} variant="secondary" className="gap-2">
               <Save className="h-4 w-4" />
               Save Week
