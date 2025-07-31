@@ -11,7 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 interface ExchangeRates {
   usdToBrl: number;
   eurToBrl: number;
-  btcToBrl: number;
+  btcToUsd: number;
 }
 
 interface AccountBalance {
@@ -56,7 +56,7 @@ const FinancialDashboard = () => {
   const [currentWeek, setCurrentWeek] = useState<WeeklyData>({
     id: '',
     date: new Date().toISOString().split('T')[0],
-    rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToBrl: 350000 },
+    rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToUsd: 45000 },
     accounts: DEFAULT_ACCOUNTS.map((name, index) => ({
       id: `account-${index}`,
       name,
@@ -169,8 +169,8 @@ const FinancialDashboard = () => {
     localStorage.setItem('financialWeeks', JSON.stringify(updatedWeeks));
     
     toast({
-      title: "Semana salva com sucesso!",
-      description: `Dados da semana ${weekToSave.date} foram salvos.`,
+      title: "Week saved successfully!",
+      description: `Week ${weekToSave.date} data has been saved.`,
     });
   };
 
@@ -183,7 +183,7 @@ const FinancialDashboard = () => {
     setCurrentWeek({
       id: '',
       date: nextMonday.toISOString().split('T')[0],
-      rates: currentWeek.rates, // Mantém as cotações da semana anterior
+      rates: currentWeek.rates, // Keep previous week rates
       accounts: DEFAULT_ACCOUNTS.map((name, index) => ({
         id: `account-${index}`,
         name,
@@ -199,8 +199,8 @@ const FinancialDashboard = () => {
     setActiveTab('current');
     
     toast({
-      title: "Nova semana criada!",
-      description: "Valores zerados, cotações mantidas como referência.",
+      title: "New week created!",
+      description: "Values cleared, exchange rates kept as reference.",
     });
   };
 
@@ -230,27 +230,27 @@ const FinancialDashboard = () => {
           <div className="flex items-center gap-3">
             <TrendingUp className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Dashboard Financeiro</h1>
-              <p className="text-muted-foreground">Gestão semanal de portfólio</p>
+              <h1 className="text-3xl font-bold text-foreground">Private Wealthy Tracker</h1>
+              <p className="text-muted-foreground">Weekly Portfolio Management</p>
             </div>
           </div>
           
           <div className="flex gap-2">
-            <Button onClick={saveCurrentWeek} variant="success" className="gap-2">
+            <Button onClick={saveCurrentWeek} variant="secondary" className="gap-2">
               <Save className="h-4 w-4" />
-              Salvar Semana
+              Save Week
             </Button>
-            <Button onClick={createNewWeek} variant="financial" className="gap-2">
+            <Button onClick={createNewWeek} variant="default" className="gap-2">
               <Plus className="h-4 w-4" />
-              Nova Semana
+              New Week
             </Button>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="current">Semana Atual</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
+            <TabsTrigger value="current">Current Week</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
           <TabsContent value="current" className="space-y-6">
@@ -259,7 +259,7 @@ const FinancialDashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5" />
-                  Cotações da Semana
+                  Weekly Exchange Rates
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -300,12 +300,12 @@ const FinancialDashboard = () => {
                   
                   <div className="flex items-center gap-2">
                     <Bitcoin className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium min-w-[80px]">BTC/BRL:</span>
+                    <span className="text-sm font-medium min-w-[80px]">BTC/USD:</span>
                     <Input
                       type="number"
-                      step="1000"
-                      value={currentWeek.rates.btcToBrl}
-                      onChange={(e) => updateExchangeRate('btcToBrl', parseFloat(e.target.value) || 0)}
+                      step="100"
+                      value={currentWeek.rates.btcToUsd}
+                      onChange={(e) => updateExchangeRate('btcToUsd', parseFloat(e.target.value) || 0)}
                       className="w-32"
                     />
                   </div>
@@ -361,7 +361,7 @@ const FinancialDashboard = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Portfólio Total</p>
+                      <p className="text-sm text-muted-foreground">Total Portfolio</p>
                       <p className="text-2xl font-bold text-primary">
                         {formatCurrency(getTotalPortfolioInBrl(), 'BRL')}
                       </p>
@@ -375,22 +375,22 @@ const FinancialDashboard = () => {
             {/* Accounts Table */}
             <Card>
               <CardHeader>
-                <CardTitle>Saldos por Conta</CardTitle>
+                <CardTitle>Account Balances</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left p-2 font-medium">Conta</th>
+                        <th className="text-left p-2 font-medium">Account</th>
                         <th className="text-right p-2 font-medium">USD</th>
                         <th className="text-right p-2 font-medium">BRL</th>
                         <th className="text-right p-2 font-medium">EUR</th>
                         {previousWeek && (
                           <>
-                            <th className="text-right p-2 font-medium text-muted-foreground">USD Ant.</th>
-                            <th className="text-right p-2 font-medium text-muted-foreground">BRL Ant.</th>
-                            <th className="text-right p-2 font-medium text-muted-foreground">EUR Ant.</th>
+                            <th className="text-right p-2 font-medium text-muted-foreground">USD Prev.</th>
+                            <th className="text-right p-2 font-medium text-muted-foreground">BRL Prev.</th>
+                            <th className="text-right p-2 font-medium text-muted-foreground">EUR Prev.</th>
                           </>
                         )}
                       </tr>
@@ -457,21 +457,21 @@ const FinancialDashboard = () => {
           <TabsContent value="history" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Histórico de Semanas Salvas</CardTitle>
+                <CardTitle>Saved Weeks History</CardTitle>
               </CardHeader>
               <CardContent>
                 {savedWeeks.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma semana salva ainda.</p>
-                    <p className="text-sm">Salve uma semana para ver o histórico aqui.</p>
+                    <p>No weeks saved yet.</p>
+                    <p className="text-sm">Save a week to see history here.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {savedWeeks.reverse().map((week) => (
                       <div key={week.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium">Semana de {new Date(week.date).toLocaleDateString('pt-BR')}</h3>
+                          <h3 className="font-medium">Week of {new Date(week.date).toLocaleDateString('en-US')}</h3>
                           <Badge variant="outline">
                             {formatCurrency(
                               week.totalBrl + 
@@ -499,7 +499,7 @@ const FinancialDashboard = () => {
                         <div className="grid grid-cols-3 gap-4 text-xs text-muted-foreground">
                           <div>USD/BRL: {week.rates.usdToBrl}</div>
                           <div>EUR/BRL: {week.rates.eurToBrl}</div>
-                          <div>BTC/BRL: {week.rates.btcToBrl.toLocaleString('pt-BR')}</div>
+                          <div>BTC/USD: {week.rates.btcToUsd.toLocaleString('en-US')}</div>
                         </div>
                       </div>
                     ))}
