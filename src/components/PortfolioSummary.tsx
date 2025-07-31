@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, TrendingDown, Settings, DollarSign, Euro, Banknote, Minus, Trash2 } from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, Settings, DollarSign, Euro, Banknote, Minus } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { useToast } from '@/hooks/use-toast';
 import FinancialDashboard from './FinancialDashboard';
 
 interface WeeklyData {
@@ -28,23 +27,10 @@ interface WeeklyData {
 }
 
 export const PortfolioSummary = () => {
-  const { toast } = useToast();
   const [showDetailed, setShowDetailed] = useState(false);
   const [latestWeek, setLatestWeek] = useState<WeeklyData | null>(null);
   const [previousWeek, setPreviousWeek] = useState<WeeklyData | null>(null);
   const [allWeeks, setAllWeeks] = useState<WeeklyData[]>([]);
-
-  const clearAllData = () => {
-    localStorage.removeItem('financialWeeks');
-    setAllWeeks([]);
-    setLatestWeek(null);
-    setPreviousWeek(null);
-    
-    toast({
-      title: "Todos os dados foram limpos!",
-      description: "Todos os dados financeiros foram permanentemente removidos.",
-    });
-  };
 
   useEffect(() => {
     const savedWeeks = localStorage.getItem('financialWeeks');
@@ -58,66 +44,6 @@ export const PortfolioSummary = () => {
           setPreviousWeek(sorted[1]);
         }
       }
-    } else {
-      // Generate demo data for visualization - multiple weeks
-      const demoWeeks: WeeklyData[] = [
-        {
-          id: 'demo-week-4',
-          date: new Date().toISOString().split('T')[0],
-          rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToUsd: 67500 },
-          accounts: [
-            { id: '1', name: 'BYBIT MAIN', usd: 75000, brl: 0, eur: 0 },
-            { id: '2', name: 'BINANCE', usd: 45000, brl: 0, eur: 0 },
-            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 85000, eur: 0 },
-            { id: '4', name: 'WISE', usd: 15000, brl: 25000, eur: 8000 },
-            { id: '5', name: 'ANDOLKER LLC', usd: 35000, brl: 50000, eur: 12000 }
-          ],
-          totalUsd: 170000, totalBrl: 160000, totalEur: 20000
-        },
-        {
-          id: 'demo-week-3',
-          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          rates: { usdToBrl: 5.48, eurToBrl: 6.08, btcToUsd: 65200 },
-          accounts: [
-            { id: '1', name: 'BYBIT MAIN', usd: 72000, brl: 0, eur: 0 },
-            { id: '2', name: 'BINANCE', usd: 43000, brl: 0, eur: 0 },
-            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 82000, eur: 0 },
-            { id: '4', name: 'WISE', usd: 14000, brl: 23000, eur: 7500 },
-            { id: '5', name: 'ANDOLKER LLC', usd: 33000, brl: 48000, eur: 11500 }
-          ],
-          totalUsd: 162000, totalBrl: 153000, totalEur: 19000
-        },
-        {
-          id: 'demo-week-2',
-          date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          rates: { usdToBrl: 5.62, eurToBrl: 6.22, btcToUsd: 63800 },
-          accounts: [
-            { id: '1', name: 'BYBIT MAIN', usd: 68000, brl: 0, eur: 0 },
-            { id: '2', name: 'BINANCE', usd: 40000, brl: 0, eur: 0 },
-            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 78000, eur: 0 },
-            { id: '4', name: 'WISE', usd: 13000, brl: 20000, eur: 7000 },
-            { id: '5', name: 'ANDOLKER LLC', usd: 30000, brl: 45000, eur: 10000 }
-          ],
-          totalUsd: 151000, totalBrl: 143000, totalEur: 17000
-        },
-        {
-          id: 'demo-week-1',
-          date: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          rates: { usdToBrl: 5.71, eurToBrl: 6.35, btcToUsd: 61500 },
-          accounts: [
-            { id: '1', name: 'BYBIT MAIN', usd: 65000, brl: 0, eur: 0 },
-            { id: '2', name: 'BINANCE', usd: 38000, brl: 0, eur: 0 },
-            { id: '3', name: 'BRADESCO BR', usd: 0, brl: 75000, eur: 0 },
-            { id: '4', name: 'WISE', usd: 12000, brl: 18000, eur: 6500 },
-            { id: '5', name: 'ANDOLKER LLC', usd: 28000, brl: 42000, eur: 9500 }
-          ],
-          totalUsd: 143000, totalBrl: 135000, totalEur: 16000
-        }
-      ];
-      
-      setAllWeeks(demoWeeks);
-      setLatestWeek(demoWeeks[0]);
-      setPreviousWeek(demoWeeks[1]);
     }
   }, []);
 
@@ -227,16 +153,10 @@ export const PortfolioSummary = () => {
               {new Date(latestWeek.date).toLocaleDateString('pt-BR')}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={clearAllData} variant="destructive" className="gap-2">
-              <Trash2 className="h-4 w-4" />
-              Limpar Dados
-            </Button>
-            <Button onClick={() => setShowDetailed(true)} className="gap-2">
-              <Settings className="h-4 w-4" />
-              Manage Portfolio
-            </Button>
-          </div>
+          <Button onClick={() => setShowDetailed(true)} className="gap-2">
+            <Settings className="h-4 w-4" />
+            Manage Portfolio
+          </Button>
         </div>
 
         {/* Total Portfolio in All Currencies */}
