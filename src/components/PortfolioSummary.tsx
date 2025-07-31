@@ -41,6 +41,28 @@ export const PortfolioSummary = () => {
           setPreviousWeek(sorted[1]);
         }
       }
+    } else {
+      // Generate demo data for visualization
+      const demoData: WeeklyData = {
+        id: 'demo-week-1',
+        date: new Date().toISOString().split('T')[0],
+        rates: {
+          usdToBrl: 5.55,
+          eurToBrl: 6.15,
+          btcToUsd: 67500
+        },
+        accounts: [
+          { id: '1', name: 'BYBIT MAIN', usd: 75000, brl: 0, eur: 0 },
+          { id: '2', name: 'BINANCE', usd: 45000, brl: 0, eur: 0 },
+          { id: '3', name: 'BRADESCO BR', usd: 0, brl: 85000, eur: 0 },
+          { id: '4', name: 'WISE', usd: 15000, brl: 25000, eur: 8000 },
+          { id: '5', name: 'ANDOLKER LLC', usd: 35000, brl: 50000, eur: 12000 }
+        ],
+        totalUsd: 170000,
+        totalBrl: 160000,
+        totalEur: 20000
+      };
+      setLatestWeek(demoData);
     }
   }, []);
 
