@@ -218,87 +218,6 @@ const FinancialDashboard = () => {
     }).format(value);
   };
 
-  const generateDemoData = () => {
-    const demoWeeks: WeeklyData[] = [];
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - (10 * 7)); // 10 weeks ago
-
-    // Base values for accounts (more realistic distribution)
-    const accountBaseValues = {
-      'ANDOLKER LLC': { usd: 50000, brl: 20000, eur: 10000 },
-      'ANDOLKER TRC': { usd: 30000, brl: 15000, eur: 5000 },
-      'BYBIT MAIN': { usd: 75000, brl: 0, eur: 0 },
-      'BYBIT SUBACCOUNT': { usd: 25000, brl: 0, eur: 0 },
-      'BINANCE': { usd: 60000, brl: 0, eur: 0 },
-      'MEXN': { usd: 15000, brl: 0, eur: 0 },
-      'GATE': { usd: 20000, brl: 0, eur: 0 },
-      'CRYPTOCOM': { usd: 35000, brl: 0, eur: 0 },
-      'METAMASK': { usd: 12000, brl: 0, eur: 0 },
-      'PHANTOM': { usd: 8000, brl: 0, eur: 0 },
-      'BRADESCO BR': { usd: 0, brl: 45000, eur: 0 },
-      'BRADESCO US': { usd: 15000, brl: 0, eur: 0 },
-      'C6': { usd: 0, brl: 25000, eur: 0 },
-      'WISE': { usd: 10000, brl: 5000, eur: 8000 },
-      'AVENUE': { usd: 18000, brl: 0, eur: 0 }
-    };
-
-    for (let i = 0; i < 10; i++) {
-      const weekDate = new Date(startDate);
-      weekDate.setDate(weekDate.getDate() + (i * 7));
-
-      // Generate realistic exchange rates with some variation
-      const baseUsdBrl = 5.55;
-      const baseEurBrl = 6.15;
-      const baseBtcUsd = 45000;
-      
-      const rates = {
-        usdToBrl: baseUsdBrl + (Math.random() - 0.5) * 0.4, // ±0.2 variation
-        eurToBrl: baseEurBrl + (Math.random() - 0.5) * 0.4, // ±0.2 variation
-        btcToUsd: baseBtcUsd + (Math.random() - 0.5) * 10000 // ±5000 variation
-      };
-
-      // Generate accounts with realistic variations
-      const accounts = DEFAULT_ACCOUNTS.map((name, index) => {
-        const baseValues = accountBaseValues[name as keyof typeof accountBaseValues] || { usd: 0, brl: 0, eur: 0 };
-        
-        // Add growth trend + some randomness
-        const growthFactor = 1 + (i * 0.02) + (Math.random() - 0.5) * 0.1; // 2% weekly growth + randomness
-        
-        return {
-          id: `account-${index}`,
-          name,
-          usd: Math.max(0, baseValues.usd * growthFactor),
-          brl: Math.max(0, baseValues.brl * growthFactor),
-          eur: Math.max(0, baseValues.eur * growthFactor)
-        };
-      });
-
-      // Calculate totals
-      const totals = calculateTotals(accounts);
-
-      const weekData: WeeklyData = {
-        id: `demo-week-${i}`,
-        date: weekDate.toISOString().split('T')[0],
-        rates,
-        accounts,
-        ...totals
-      };
-
-      demoWeeks.push(weekData);
-    }
-
-    // Save demo data
-    setSavedWeeks(demoWeeks);
-    localStorage.setItem('financialWeeks', JSON.stringify(demoWeeks));
-    
-    // Set the last week as previous week
-    setPreviousWeek(demoWeeks[demoWeeks.length - 1]);
-
-    toast({
-      title: "Demo data generated!",
-      description: "10 weeks of realistic demo data have been created for testing analytics.",
-    });
-  };
 
   const clearAllData = () => {
     setSavedWeeks([]);
@@ -331,9 +250,6 @@ const FinancialDashboard = () => {
           </div>
           
           <div className="flex gap-2 flex-wrap">
-            <Button onClick={generateDemoData} variant="secondary" size="sm" className="gap-1">
-              Generate Demo Data
-            </Button>
             <Button onClick={clearAllData} variant="destructive" size="sm" className="gap-1">
               Clear All Data
             </Button>
