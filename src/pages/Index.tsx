@@ -1,7 +1,7 @@
-import FinancialDashboard from '@/components/FinancialDashboard';
+import { PortfolioSummary } from "@/components/PortfolioSummary";
 
 const Index = () => {
-  return <FinancialDashboard />;
+  return <PortfolioSummary />;
 };
 
 export default Index;

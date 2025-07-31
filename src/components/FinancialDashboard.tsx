@@ -51,7 +51,7 @@ const DEFAULT_ACCOUNTS = [
   'AVENUE'
 ];
 
-const FinancialDashboard = () => {
+const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
   const { toast } = useToast();
   
   const [currentWeek, setCurrentWeek] = useState<WeeklyData>({
@@ -230,16 +230,17 @@ const FinancialDashboard = () => {
     <div className="min-h-screen bg-background p-4 space-y-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Private Wealthy Tracker</h1>
-              <p className="text-muted-foreground">Weekly Portfolio Management</p>
-            </div>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-primary">Financial Dashboard</h1>
+            <p className="text-muted-foreground">Manage your portfolio and track performance</p>
           </div>
-          
           <div className="flex gap-2">
+            {onBack && (
+              <Button onClick={onBack} variant="outline" className="gap-2">
+                ← Back to Summary
+              </Button>
+            )}
             <Button onClick={() => setShowAnalytics(true)} variant="outline" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               Analytics
