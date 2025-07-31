@@ -53,8 +53,8 @@ export const PortfolioSummary = () => {
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-12">
-            <h1 className="text-3xl font-bold text-primary mb-4">Financial Portfolio</h1>
-            <p className="text-muted-foreground mb-8">No data available yet. Start by adding your financial information.</p>
+            <h1 className="text-3xl font-bold text-primary mb-4">Portfolio Overview</h1>
+            <p className="text-muted-foreground mb-8">No data available yet. Start by managing your portfolio.</p>
             <Button onClick={() => setShowDetailed(true)} className="gap-2">
               <Settings className="h-4 w-4" />
               Manage Portfolio
@@ -80,26 +80,17 @@ export const PortfolioSummary = () => {
            (latestWeek.totalEur * latestWeek.rates.eurToBrl);
   };
 
-  const getPreviousTotalInBrl = () => {
-    if (!previousWeek) return 0;
-    return previousWeek.totalBrl + 
-           (previousWeek.totalUsd * previousWeek.rates.usdToBrl) + 
-           (previousWeek.totalEur * previousWeek.rates.eurToBrl);
-  };
-
   const currentTotal = getTotalPortfolioInBrl();
-  const previousTotal = getPreviousTotalInBrl();
-  const variation = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Portfolio Summary</h1>
+            <h1 className="text-3xl font-bold text-primary">Portfolio Overview</h1>
             <p className="text-muted-foreground">
-              Last updated: {new Date(latestWeek.date).toLocaleDateString('pt-BR')}
+              {new Date(latestWeek.date).toLocaleDateString('pt-BR')}
             </p>
           </div>
           <Button onClick={() => setShowDetailed(true)} className="gap-2">
@@ -108,138 +99,76 @@ export const PortfolioSummary = () => {
           </Button>
         </div>
 
-        {/* Main Portfolio Value */}
-        <Card className="mb-8 border-primary/20">
-          <CardContent className="p-8">
+        {/* Total Portfolio */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
             <div className="text-center">
-              <h2 className="text-lg text-muted-foreground mb-2">Total Portfolio Value</h2>
-              <div className="text-4xl font-bold text-primary mb-4">
+              <h2 className="text-lg text-muted-foreground mb-2">Total Portfolio</h2>
+              <div className="text-3xl font-bold text-primary">
                 {formatCurrency(currentTotal, 'BRL')}
               </div>
-              {previousWeek && (
-                <div className="flex items-center justify-center gap-2">
-                  {variation >= 0 ? (
-                    <TrendingUp className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <TrendingDown className="h-5 w-5 text-red-500" />
-                  )}
-                  <span className={`text-lg font-semibold ${variation >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {variation >= 0 ? '+' : ''}{variation.toFixed(2)}%
-                  </span>
-                  <span className="text-muted-foreground">vs last week</span>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Currency Breakdown */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Current Balances */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">USD Holdings</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                USD Balance
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(latestWeek.totalUsd, 'USD')}</div>
-              <p className="text-xs text-muted-foreground">
-                ≈ {formatCurrency(latestWeek.totalUsd * latestWeek.rates.usdToBrl, 'BRL')}
-              </p>
+            <CardContent className="pt-0">
+              <div className="text-xl font-bold">{formatCurrency(latestWeek.totalUsd, 'USD')}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">BRL Holdings</CardTitle>
-              <Banknote className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Banknote className="h-4 w-4" />
+                BRL Balance
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(latestWeek.totalBrl, 'BRL')}</div>
-              <p className="text-xs text-muted-foreground">
-                Native currency
-              </p>
+            <CardContent className="pt-0">
+              <div className="text-xl font-bold">{formatCurrency(latestWeek.totalBrl, 'BRL')}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">EUR Holdings</CardTitle>
-              <Euro className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Euro className="h-4 w-4" />
+                EUR Balance
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(latestWeek.totalEur, 'EUR')}</div>
-              <p className="text-xs text-muted-foreground">
-                ≈ {formatCurrency(latestWeek.totalEur * latestWeek.rates.eurToBrl, 'BRL')}
-              </p>
+            <CardContent className="pt-0">
+              <div className="text-xl font-bold">{formatCurrency(latestWeek.totalEur, 'EUR')}</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Exchange Rates */}
-        <Card className="mb-8">
+        {/* Current Exchange Rates */}
+        <Card>
           <CardHeader>
             <CardTitle>Current Exchange Rates</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
-                <span className="font-medium">USD → BRL</span>
-                <Badge variant="secondary">
-                  {latestWeek.rates.usdToBrl.toFixed(4)}
-                </Badge>
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">USD → BRL</div>
+                <div className="text-lg font-bold">{latestWeek.rates.usdToBrl.toFixed(4)}</div>
               </div>
-              <div className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
-                <span className="font-medium">EUR → BRL</span>
-                <Badge variant="secondary">
-                  {latestWeek.rates.eurToBrl.toFixed(4)}
-                </Badge>
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">EUR → BRL</div>
+                <div className="text-lg font-bold">{latestWeek.rates.eurToBrl.toFixed(4)}</div>
               </div>
-              <div className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
-                <span className="font-medium">BTC → USD</span>
-                <Badge variant="secondary">
-                  {formatCurrency(latestWeek.rates.btcToUsd, 'USD')}
-                </Badge>
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">BTC → USD</div>
+                <div className="text-lg font-bold">{formatCurrency(latestWeek.rates.btcToUsd, 'USD')}</div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Accounts */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Account Balances</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {latestWeek.accounts
-                .filter(account => account.usd > 0 || account.brl > 0 || account.eur > 0)
-                .sort((a, b) => {
-                  const totalA = a.brl + (a.usd * latestWeek.rates.usdToBrl) + (a.eur * latestWeek.rates.eurToBrl);
-                  const totalB = b.brl + (b.usd * latestWeek.rates.usdToBrl) + (b.eur * latestWeek.rates.eurToBrl);
-                  return totalB - totalA;
-                })
-                .slice(0, 5)
-                .map((account) => {
-                  const totalInBrl = account.brl + (account.usd * latestWeek.rates.usdToBrl) + (account.eur * latestWeek.rates.eurToBrl);
-                  return (
-                    <div key={account.id} className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
-                      <div>
-                        <span className="font-medium">{account.name}</span>
-                        <div className="text-sm text-muted-foreground">
-                          {account.usd > 0 && `${formatCurrency(account.usd, 'USD')} `}
-                          {account.brl > 0 && `${formatCurrency(account.brl, 'BRL')} `}
-                          {account.eur > 0 && `${formatCurrency(account.eur, 'EUR')}`}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{formatCurrency(totalInBrl, 'BRL')}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {((totalInBrl / currentTotal) * 100).toFixed(1)}%
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
             </div>
           </CardContent>
         </Card>
