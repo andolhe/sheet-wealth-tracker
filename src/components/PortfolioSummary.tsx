@@ -186,9 +186,13 @@ export const PortfolioSummary = () => {
       const totalInBrl = week.totalBrl + 
                         (week.totalUsd * week.rates.usdToBrl) + 
                         (week.totalEur * week.rates.eurToBrl);
+      const totalInUsd = (week.totalBrl / week.rates.usdToBrl) + 
+                        week.totalUsd + 
+                        (week.totalEur * week.rates.eurToBrl / week.rates.usdToBrl);
       return {
         week: new Date(week.date).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' }),
-        total: totalInBrl
+        totalBrl: totalInBrl,
+        totalUsd: totalInUsd
       };
     });
 
@@ -309,7 +313,7 @@ export const PortfolioSummary = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Evolução do Portfolio (BRL)
+                Evolução do Portfolio (BRL / USD)
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -323,18 +327,40 @@ export const PortfolioSummary = () => {
                       tickLine={false}
                     />
                     <YAxis 
+                      yAxisId="brl"
+                      orientation="left"
                       tick={{ fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
                       tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
                     />
+                    <YAxis 
+                      yAxisId="usd"
+                      orientation="right"
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                    />
                     <Line 
+                      yAxisId="brl"
                       type="monotone" 
-                      dataKey="total" 
+                      dataKey="totalBrl" 
                       stroke="hsl(var(--primary))" 
                       strokeWidth={3}
                       dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
                       activeDot={{ r: 6, stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                      name="BRL"
+                    />
+                    <Line 
+                      yAxisId="usd"
+                      type="monotone" 
+                      dataKey="totalUsd" 
+                      stroke="hsl(var(--secondary))" 
+                      strokeWidth={3}
+                      dot={{ fill: "hsl(var(--secondary))", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, stroke: "hsl(var(--secondary))", strokeWidth: 2 }}
+                      name="USD"
                     />
                   </LineChart>
                 </ResponsiveContainer>
