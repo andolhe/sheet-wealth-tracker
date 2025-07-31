@@ -219,16 +219,6 @@ const FinancialDashboard = () => {
   };
 
 
-  const clearAllData = () => {
-    setSavedWeeks([]);
-    setPreviousWeek(null);
-    localStorage.removeItem('financialWeeks');
-    
-    toast({
-      title: "All data cleared!",
-      description: "All saved weeks have been removed.",
-    });
-  };
 
   const getTotalPortfolioInBrl = () => {
     return currentWeek.totalBrl + 
@@ -249,10 +239,7 @@ const FinancialDashboard = () => {
             </div>
           </div>
           
-          <div className="flex gap-2 flex-wrap">
-            <Button onClick={clearAllData} variant="destructive" size="sm" className="gap-1">
-              Clear All Data
-            </Button>
+          <div className="flex gap-2">
             <Button onClick={() => setShowAnalytics(true)} variant="outline" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               Analytics
