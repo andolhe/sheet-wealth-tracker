@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2 } from 'lucide-react';
+import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AnalyticsDashboard from './AnalyticsDashboard';
 
@@ -58,13 +58,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     id: '',
     date: new Date().toISOString().split('T')[0],
     rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToUsd: 45000 },
-    accounts: DEFAULT_ACCOUNTS.map((name, index) => ({
-      id: `account-${index}`,
-      name,
-      usd: 0,
-      brl: 0,
-      eur: 0
-    })),
+    accounts: [],
     totalUsd: 0,
     totalBrl: 0,
     totalEur: 0
@@ -160,6 +154,56 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     }));
   };
 
+  const addNewAccount = () => {
+    const newAccountName = `Nova Conta ${currentWeek.accounts.length + 1}`;
+    const newAccount: AccountBalance = {
+      id: `account-${Date.now()}`,
+      name: newAccountName,
+      usd: 0,
+      brl: 0,
+      eur: 0
+    };
+
+    setCurrentWeek(prev => ({
+      ...prev,
+      accounts: [...prev.accounts, newAccount]
+    }));
+
+    toast({
+      title: "Nova conta adicionada!",
+      description: `Conta "${newAccountName}" foi criada. Clique no nome para editá-lo.`,
+    });
+  };
+
+  const removeAccount = (accountId: string) => {
+    setCurrentWeek(prev => {
+      const newAccounts = prev.accounts.filter(acc => acc.id !== accountId);
+      const totals = calculateTotals(newAccounts);
+      
+      return {
+        ...prev,
+        accounts: newAccounts,
+        ...totals
+      };
+    });
+
+    toast({
+      title: "Conta removida!",
+      description: "A conta foi removida do portfólio.",
+    });
+  };
+
+  const updateAccountName = (accountId: string, newName: string) => {
+    setCurrentWeek(prev => ({
+      ...prev,
+      accounts: prev.accounts.map(account => 
+        account.id === accountId 
+          ? { ...account, name: newName }
+          : account
+      )
+    }));
+  };
+
   const saveCurrentWeek = () => {
     const weekToSave = {
       ...currentWeek,
@@ -186,9 +230,9 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
       id: '',
       date: nextMonday.toISOString().split('T')[0],
       rates: currentWeek.rates, // Keep previous week rates
-      accounts: DEFAULT_ACCOUNTS.map((name, index) => ({
-        id: `account-${index}`,
-        name,
+      accounts: currentWeek.accounts.map(account => ({
+        ...account,
+        id: `account-${Date.now()}-${account.id}`,
         usd: 0,
         brl: 0,
         eur: 0
@@ -216,13 +260,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
       id: '',
       date: new Date().toISOString().split('T')[0],
       rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToUsd: 45000 },
-      accounts: DEFAULT_ACCOUNTS.map((name, index) => ({
-        id: `account-${index}`,
-        name,
-        usd: 0,
-        brl: 0,
-        eur: 0
-      })),
+      accounts: [],
       totalUsd: 0,
       totalBrl: 0,
       totalEur: 0
@@ -418,7 +456,13 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
             {/* Accounts Table */}
             <Card>
               <CardHeader>
-                <CardTitle>Account Balances</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Account Balances</CardTitle>
+                  <Button onClick={addNewAccount} size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Account
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -436,6 +480,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                             <th className="text-right p-2 font-medium text-muted-foreground">EUR Prev.</th>
                           </>
                         )}
+                        <th className="text-center p-2 font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -443,7 +488,14 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                         const prevAccount = previousWeek?.accounts.find(acc => acc.name === account.name);
                         return (
                           <tr key={account.id} className="border-b hover:bg-muted/50">
-                            <td className="p-2 font-medium">{account.name}</td>
+                            <td className="p-2">
+                              <Input
+                                value={account.name}
+                                onChange={(e) => updateAccountName(account.id, e.target.value)}
+                                className="font-medium border-none bg-transparent focus:bg-background"
+                                placeholder="Nome da conta"
+                              />
+                            </td>
                             <td className="p-2">
                               <Input
                                 type="number"
@@ -487,6 +539,16 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                                 </td>
                               </>
                             )}
+                            <td className="p-2 text-center">
+                              <Button
+                                onClick={() => removeAccount(account.id)}
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </td>
                           </tr>
                         );
                       })}
