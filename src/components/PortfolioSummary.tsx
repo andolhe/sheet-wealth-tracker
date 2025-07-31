@@ -33,18 +33,11 @@ export const PortfolioSummary = () => {
   const [allWeeks, setAllWeeks] = useState<WeeklyData[]>([]);
 
   useEffect(() => {
-    const savedWeeks = localStorage.getItem('financialWeeks');
-    if (savedWeeks) {
-      const weeks: WeeklyData[] = JSON.parse(savedWeeks);
-      if (weeks.length > 0) {
-        const sorted = weeks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        setAllWeeks(sorted);
-        setLatestWeek(sorted[0]);
-        if (sorted.length > 1) {
-          setPreviousWeek(sorted[1]);
-        }
-      }
-    }
+    // Clear any existing data to start fresh
+    localStorage.removeItem('financialWeeks');
+    setAllWeeks([]);
+    setLatestWeek(null);
+    setPreviousWeek(null);
   }, []);
 
   if (showDetailed) {
