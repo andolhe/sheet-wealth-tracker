@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3 } from 'lucide-react';
+import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import AnalyticsDashboard from './AnalyticsDashboard';
 
@@ -206,6 +206,36 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     });
   };
 
+  const clearAllData = () => {
+    localStorage.removeItem('financialWeeks');
+    setSavedWeeks([]);
+    setPreviousWeek(null);
+    
+    // Reset current week to default values
+    setCurrentWeek({
+      id: '',
+      date: new Date().toISOString().split('T')[0],
+      rates: { usdToBrl: 5.55, eurToBrl: 6.15, btcToUsd: 45000 },
+      accounts: DEFAULT_ACCOUNTS.map((name, index) => ({
+        id: `account-${index}`,
+        name,
+        usd: 0,
+        brl: 0,
+        eur: 0
+      })),
+      totalUsd: 0,
+      totalBrl: 0,
+      totalEur: 0
+    });
+    
+    setActiveTab('current');
+    
+    toast({
+      title: "All data cleared!",
+      description: "All financial data has been permanently deleted.",
+    });
+  };
+
   const formatCurrency = (value: number, currency: string) => {
     const locale = currency === 'BRL' ? 'pt-BR' : currency === 'EUR' ? 'de-DE' : 'en-US';
     const currencyCode = currency;
@@ -244,6 +274,10 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
             <Button onClick={() => setShowAnalytics(true)} variant="outline" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               Analytics
+            </Button>
+            <Button onClick={clearAllData} variant="destructive" className="gap-2">
+              <Trash2 className="h-4 w-4" />
+              Clear All Data
             </Button>
             <Button onClick={saveCurrentWeek} variant="secondary" className="gap-2">
               <Save className="h-4 w-4" />
