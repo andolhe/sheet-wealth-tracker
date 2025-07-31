@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin } from 'lucide-react';
+import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 interface ExchangeRates {
   usdToBrl: number;
@@ -72,6 +73,7 @@ const FinancialDashboard = () => {
   const [previousWeek, setPreviousWeek] = useState<WeeklyData | null>(null);
   const [savedWeeks, setSavedWeeks] = useState<WeeklyData[]>([]);
   const [activeTab, setActiveTab] = useState('current');
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('financialWeeks');
@@ -236,6 +238,10 @@ const FinancialDashboard = () => {
           </div>
           
           <div className="flex gap-2">
+            <Button onClick={() => setShowAnalytics(true)} variant="outline" className="gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </Button>
             <Button onClick={saveCurrentWeek} variant="secondary" className="gap-2">
               <Save className="h-4 w-4" />
               Save Week
@@ -510,6 +516,14 @@ const FinancialDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Analytics Dashboard Modal */}
+      {showAnalytics && (
+        <AnalyticsDashboard 
+          savedWeeks={savedWeeks} 
+          onClose={() => setShowAnalytics(false)} 
+        />
+      )}
     </div>
   );
 };
