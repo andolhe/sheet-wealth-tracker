@@ -406,7 +406,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
             </Card>
 
             {/* Portfolio Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -445,20 +445,6 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                       </p>
                     </div>
                     <Euro className="h-8 w-8 text-warning/60" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Portfolio</p>
-                      <p className="text-2xl font-bold text-primary">
-                        {formatCurrency(getTotalPortfolioInBrl(), 'BRL')}
-                      </p>
-                    </div>
-                    <TrendingUp className="h-8 w-8 text-primary/60" />
                   </div>
                 </CardContent>
               </Card>
