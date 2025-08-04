@@ -101,7 +101,7 @@ export const PortfolioSummary = () => {
   }
 
   const formatCurrency = (value: number, currency: string) => {
-    return new Intl.NumberFormat('pt-BR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
       minimumFractionDigits: 2,
