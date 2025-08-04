@@ -351,14 +351,14 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                     }}
                     formatter={(value: any) => [`${value.toFixed(2)}%`, 'Variation']}
                   />
-                  <Bar 
-                    dataKey="variation" 
-                    fill="hsl(var(--warning))"
-                    shape={(props: any) => {
-                      const fill = props.payload.variation >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))';
-                      return <rect {...props} fill={fill} />;
-                    }}
-                  />
+                  <Bar dataKey="variation">
+                    {totalEvolutionData.map((entry, index) => (
+                      <rect
+                        key={`cell-${index}`}
+                        fill={entry.variation >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

@@ -46,11 +46,26 @@ export const PortfolioSummary = () => {
             setLatestWeek(sortedWeeks[0]);
             if (sortedWeeks.length > 1) {
               setPreviousWeek(sortedWeeks[1]);
+            } else {
+              setPreviousWeek(null);
             }
+          } else {
+            // Clear all data when no weeks exist
+            setLatestWeek(null);
+            setPreviousWeek(null);
           }
         } catch (error) {
           console.error('Error loading financial data:', error);
+          // Clear data on error
+          setAllWeeks([]);
+          setLatestWeek(null);
+          setPreviousWeek(null);
         }
+      } else {
+        // No data in localStorage
+        setAllWeeks([]);
+        setLatestWeek(null);
+        setPreviousWeek(null);
       }
     };
 
