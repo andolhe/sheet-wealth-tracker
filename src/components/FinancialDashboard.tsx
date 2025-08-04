@@ -363,7 +363,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            defaultValue={account.usd && account.usd !== 0 ? account.usd.toString() : ''}
+            defaultValue={account.usd && account.usd !== 0 ? account.usd.toFixed(2) : ''}
             onBlur={(e) => {
               const value = e.target.value;
               if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
@@ -377,7 +377,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            defaultValue={account.brl && account.brl !== 0 ? account.brl.toString() : ''}
+            defaultValue={account.brl && account.brl !== 0 ? account.brl.toFixed(2) : ''}
             onBlur={(e) => {
               const value = e.target.value;
               if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
@@ -391,7 +391,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            defaultValue={account.eur && account.eur !== 0 ? account.eur.toString() : ''}
+            defaultValue={account.eur && account.eur !== 0 ? account.eur.toFixed(2) : ''}
             onBlur={(e) => {
               const value = e.target.value;
               if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
