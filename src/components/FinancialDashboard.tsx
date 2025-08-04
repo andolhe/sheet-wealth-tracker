@@ -512,10 +512,14 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                     <DollarSign className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium min-w-[80px]">USD/BRL:</span>
                     <Input
-                      type="number"
-                      step="0.01"
-                      value={currentWeek.rates.usdToBrl}
-                      onChange={(e) => updateExchangeRate('usdToBrl', parseFloat(e.target.value) || 0)}
+                      type="text"
+                      defaultValue={currentWeek.rates.usdToBrl && currentWeek.rates.usdToBrl !== 0 ? currentWeek.rates.usdToBrl.toString() : ''}
+                      onBlur={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                          updateExchangeRate('usdToBrl', parseFloat(value) || 0);
+                        }
+                      }}
                       className="w-24"
                     />
                   </div>
@@ -524,10 +528,14 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                     <Euro className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium min-w-[80px]">EUR/BRL:</span>
                     <Input
-                      type="number"
-                      step="0.01"
-                      value={currentWeek.rates.eurToBrl}
-                      onChange={(e) => updateExchangeRate('eurToBrl', parseFloat(e.target.value) || 0)}
+                      type="text"
+                      defaultValue={currentWeek.rates.eurToBrl && currentWeek.rates.eurToBrl !== 0 ? currentWeek.rates.eurToBrl.toString() : ''}
+                      onBlur={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                          updateExchangeRate('eurToBrl', parseFloat(value) || 0);
+                        }
+                      }}
                       className="w-24"
                     />
                   </div>
@@ -536,16 +544,20 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                     <Bitcoin className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium min-w-[80px]">BTC/USD:</span>
                     <Input
-                      type="number"
-                      step="100"
-                      value={currentWeek.rates.btcToUsd}
-                      onChange={(e) => updateExchangeRate('btcToUsd', parseFloat(e.target.value) || 0)}
+                      type="text"
+                      defaultValue={currentWeek.rates.btcToUsd && currentWeek.rates.btcToUsd !== 0 ? currentWeek.rates.btcToUsd.toString() : ''}
+                      onBlur={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                          updateExchangeRate('btcToUsd', parseFloat(value) || 0);
+                        }
+                      }}
                       className="w-32"
                     />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                </CardContent>
+              </Card>
 
             {/* Portfolio Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
