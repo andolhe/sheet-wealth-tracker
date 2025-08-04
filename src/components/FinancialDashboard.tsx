@@ -294,7 +294,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
   };
 
   const formatCurrency = (value: number, currency: string) => {
-    const locale = currency === 'BRL' ? 'pt-BR' : currency === 'EUR' ? 'de-DE' : 'en-US';
+    const locale = 'en-US'; // Usar formato americano para todos
     const currencyCode = currency;
     
     return new Intl.NumberFormat(locale, {
