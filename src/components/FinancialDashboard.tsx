@@ -653,7 +653,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                     {savedWeeks.reverse().map((week) => (
                       <div key={week.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium">Week of {new Date(week.date).toLocaleDateString('en-US')}</h3>
+                          <h3 className="font-medium">Week of {new Date(week.date).toLocaleDateString('pt-BR')}</h3>
                           <Badge variant="outline">
                             {formatCurrency(
                               week.totalBrl + 
