@@ -33,11 +33,24 @@ export const PortfolioSummary = () => {
   const [allWeeks, setAllWeeks] = useState<WeeklyData[]>([]);
 
   useEffect(() => {
-    // Clear any existing data to start fresh
-    localStorage.removeItem('financialWeeks');
-    setAllWeeks([]);
-    setLatestWeek(null);
-    setPreviousWeek(null);
+    // Load data from localStorage
+    const savedWeeks = localStorage.getItem('financialWeeks');
+    if (savedWeeks) {
+      try {
+        const weeks: WeeklyData[] = JSON.parse(savedWeeks);
+        setAllWeeks(weeks);
+        
+        if (weeks.length > 0) {
+          const sortedWeeks = weeks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setLatestWeek(sortedWeeks[0]);
+          if (sortedWeeks.length > 1) {
+            setPreviousWeek(sortedWeeks[1]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading financial data:', error);
+      }
+    }
   }, []);
 
   if (showDetailed) {
@@ -68,6 +81,10 @@ export const PortfolioSummary = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(value);
+  };
+
+  const formatNumber = (value: number) => {
+    return Number(value).toFixed(2);
   };
 
   const getTotalPortfolioInBrl = () => {
@@ -177,7 +194,7 @@ export const PortfolioSummary = () => {
                         trendBrl.direction === 'up' ? 'text-green-500' : 
                         trendBrl.direction === 'down' ? 'text-red-500' : 'text-muted-foreground'
                       }`}>
-                        {trendBrl.value.toFixed(1)}%
+                        {formatNumber(trendBrl.value)}%
                       </span>
                     </div>
                   )}
@@ -311,11 +328,11 @@ export const PortfolioSummary = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-muted/30 rounded-lg">
                 <div className="text-sm text-muted-foreground mb-1">USD → BRL</div>
-                <div className="text-lg font-bold">{latestWeek.rates.usdToBrl.toFixed(4)}</div>
+                <div className="text-lg font-bold">{formatNumber(latestWeek.rates.usdToBrl)}</div>
               </div>
               <div className="text-center p-4 bg-muted/30 rounded-lg">
                 <div className="text-sm text-muted-foreground mb-1">EUR → BRL</div>
-                <div className="text-lg font-bold">{latestWeek.rates.eurToBrl.toFixed(4)}</div>
+                <div className="text-lg font-bold">{formatNumber(latestWeek.rates.eurToBrl)}</div>
               </div>
               <div className="text-center p-4 bg-muted/30 rounded-lg">
                 <div className="text-sm text-muted-foreground mb-1">BTC → USD</div>
