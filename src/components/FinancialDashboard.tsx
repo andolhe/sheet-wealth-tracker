@@ -364,7 +364,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
           <Input
             type="number"
             step="0.01"
-            value={account.usd && account.usd !== 0 ? account.usd : ''}
+            value={account.usd && account.usd !== 0 ? parseFloat(account.usd.toFixed(2)) : ''}
             onChange={(e) => updateAccountValue(account.id, 'usd', parseFloat(e.target.value) || 0)}
             className="text-right border-none bg-transparent focus:bg-background"
             placeholder=""
@@ -374,7 +374,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
           <Input
             type="number"
             step="0.01"
-            value={account.brl && account.brl !== 0 ? account.brl : ''}
+            value={account.brl && account.brl !== 0 ? parseFloat(account.brl.toFixed(2)) : ''}
             onChange={(e) => updateAccountValue(account.id, 'brl', parseFloat(e.target.value) || 0)}
             className="text-right border-none bg-transparent focus:bg-background"
             placeholder=""
@@ -384,7 +384,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
           <Input
             type="number"
             step="0.01"
-            value={account.eur && account.eur !== 0 ? account.eur : ''}
+            value={account.eur && account.eur !== 0 ? parseFloat(account.eur.toFixed(2)) : ''}
             onChange={(e) => updateAccountValue(account.id, 'eur', parseFloat(e.target.value) || 0)}
             className="text-right border-none bg-transparent focus:bg-background"
             placeholder=""
