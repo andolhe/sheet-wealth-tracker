@@ -243,7 +243,8 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
   };
 
   const createNewWeek = () => {
-    setPreviousWeek(currentWeek);
+    // Save current week as previous before creating new one
+    const currentAsReference = { ...currentWeek };
     
     const nextMonday = new Date();
     nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
@@ -263,6 +264,9 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
       totalBrl: 0,
       totalEur: 0
     });
+    
+    // Set previous week AFTER setting new current week
+    setPreviousWeek(currentAsReference);
     
     setActiveTab('current');
     
