@@ -311,7 +311,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                      />
                      <Legend 
                        wrapperStyle={{ color: 'hsl(var(--foreground))' }}
-                       formatter={() => `Total Portfolio (${currency})`}
                      />
                      <Line 
                        type="monotone" 
