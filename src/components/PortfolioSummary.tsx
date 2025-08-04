@@ -34,23 +34,49 @@ export const PortfolioSummary = () => {
 
   useEffect(() => {
     // Load data from localStorage
-    const savedWeeks = localStorage.getItem('financialWeeks');
-    if (savedWeeks) {
-      try {
-        const weeks: WeeklyData[] = JSON.parse(savedWeeks);
-        setAllWeeks(weeks);
-        
-        if (weeks.length > 0) {
-          const sortedWeeks = weeks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          setLatestWeek(sortedWeeks[0]);
-          if (sortedWeeks.length > 1) {
-            setPreviousWeek(sortedWeeks[1]);
+    const loadData = () => {
+      const savedWeeks = localStorage.getItem('financialWeeks');
+      if (savedWeeks) {
+        try {
+          const weeks: WeeklyData[] = JSON.parse(savedWeeks);
+          setAllWeeks(weeks);
+          
+          if (weeks.length > 0) {
+            const sortedWeeks = weeks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            setLatestWeek(sortedWeeks[0]);
+            if (sortedWeeks.length > 1) {
+              setPreviousWeek(sortedWeeks[1]);
+            }
           }
+        } catch (error) {
+          console.error('Error loading financial data:', error);
         }
-      } catch (error) {
-        console.error('Error loading financial data:', error);
       }
-    }
+    };
+
+    // Load initial data
+    loadData();
+
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'financialWeeks') {
+        loadData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events (for same-tab updates)
+    const handleCustomUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener('financialDataUpdated', handleCustomUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('financialDataUpdated', handleCustomUpdate);
+    };
   }, []);
 
   if (showDetailed) {

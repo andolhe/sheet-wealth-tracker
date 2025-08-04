@@ -233,6 +233,9 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     setSavedWeeks(updatedWeeks);
     localStorage.setItem('financialWeeks', JSON.stringify(updatedWeeks));
     
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('financialDataUpdated'));
+    
     toast({
       title: "Week saved successfully!",
       description: `Week ${weekToSave.date} data has been saved.`,
