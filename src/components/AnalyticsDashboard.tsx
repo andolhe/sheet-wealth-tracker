@@ -33,6 +33,8 @@ interface AnalyticsDashboardProps {
 }
 
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onClose }) => {
+  // Debug: Log the savedWeeks data
+  console.log('Saved weeks data:', savedWeeks);
   const [currency, setCurrency] = useState<'USD' | 'BRL'>('BRL');
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [chartType, setChartType] = useState<'bar' | 'line'>('line');
@@ -61,24 +63,21 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
 
   // Prepare data for total evolution chart
   const totalEvolutionData = useMemo(() => {
-    return savedWeeks.map((week, index) => {
+    const data = savedWeeks.map((week, index) => {
       const totalValue = convertToCurrency(week.totalUsd, week.totalBrl, week.totalEur, week.rates);
       const prevWeek = index > 0 ? savedWeeks[index - 1] : null;
       const prevValue = prevWeek ? convertToCurrency(prevWeek.totalUsd, prevWeek.totalBrl, prevWeek.totalEur, prevWeek.rates) : totalValue;
       const variation = prevValue > 0 ? ((totalValue - prevValue) / prevValue) * 100 : 0;
 
       return {
-        date: new Date(week.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        total: totalValue,
-        variation: variation,
-        formattedTotal: new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: currency,
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        }).format(totalValue)
+        date: new Date(week.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        total: Math.round(totalValue),
+        variation: variation
       };
     });
+    
+    console.log('Total evolution data:', data);
+    return data;
   }, [savedWeeks, currency]);
 
   // Prepare data for account evolution chart
