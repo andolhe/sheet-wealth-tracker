@@ -362,38 +362,32 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         </td>
         <td className="p-2">
           <Input
-            type="text"
-            value={account.usd.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\./g, '').replace(',', '.');
-              updateAccountValue(account.id, 'usd', parseFloat(value) || 0);
-            }}
+            type="number"
+            step="0.01"
+            value={account.usd || ''}
+            onChange={(e) => updateAccountValue(account.id, 'usd', parseFloat(e.target.value) || 0)}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0,00"
+            placeholder="0.00"
           />
         </td>
         <td className="p-2">
           <Input
-            type="text"
-            value={account.brl.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\./g, '').replace(',', '.');
-              updateAccountValue(account.id, 'brl', parseFloat(value) || 0);
-            }}
+            type="number"
+            step="0.01"
+            value={account.brl || ''}
+            onChange={(e) => updateAccountValue(account.id, 'brl', parseFloat(e.target.value) || 0)}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0,00"
+            placeholder="0.00"
           />
         </td>
         <td className="p-2">
           <Input
-            type="text"
-            value={account.eur.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\./g, '').replace(',', '.');
-              updateAccountValue(account.id, 'eur', parseFloat(value) || 0);
-            }}
+            type="number"
+            step="0.01"
+            value={account.eur || ''}
+            onChange={(e) => updateAccountValue(account.id, 'eur', parseFloat(e.target.value) || 0)}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0,00"
+            placeholder="0.00"
           />
         </td>
         {previousWeek && (
