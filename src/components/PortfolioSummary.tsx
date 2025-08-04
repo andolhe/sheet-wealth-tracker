@@ -244,45 +244,6 @@ export const PortfolioSummary = () => {
           </Card>
         </div>
 
-        {/* Current Balances */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                USD Balance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-xl font-bold">{formatCurrency(latestWeek.totalUsd, 'USD')}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Banknote className="h-4 w-4" />
-                BRL Balance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-xl font-bold">{formatCurrency(latestWeek.totalBrl, 'BRL')}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Euro className="h-4 w-4" />
-                EUR Balance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-xl font-bold">{formatCurrency(latestWeek.totalEur, 'EUR')}</div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Portfolio Evolution Chart */}
         {chartData.length > 1 && (
           <Card className="mb-6">
