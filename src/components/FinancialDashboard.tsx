@@ -6,9 +6,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit, Settings } from 'lucide-react';
+import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit, Settings, GripVertical } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface ExchangeRates {
   usdToBrl: number;
@@ -287,6 +305,115 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     }).format(value);
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setCurrentWeek(prev => {
+        const oldIndex = prev.accounts.findIndex(acc => acc.id === active.id);
+        const newIndex = prev.accounts.findIndex(acc => acc.id === over.id);
+        
+        const newAccounts = arrayMove(prev.accounts, oldIndex, newIndex);
+        const totals = calculateTotals(newAccounts);
+        
+        return {
+          ...prev,
+          accounts: newAccounts,
+          ...totals
+        };
+      });
+    }
+  }
+
+  // Sortable Row Component
+  function SortableRow({ account, prevAccount }: { account: AccountBalance, prevAccount?: AccountBalance }) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+    } = useSortable({ id: account.id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    return (
+      <tr ref={setNodeRef} style={style} className="border-b hover:bg-muted/50">
+        <td className="p-2 flex items-center gap-2">
+          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <Input
+            value={account.name}
+            onChange={(e) => updateAccountName(account.id, e.target.value)}
+            className="font-medium border-none bg-transparent focus:bg-background flex-1"
+            placeholder="Nome da conta"
+          />
+        </td>
+        <td className="p-2">
+          <Input
+            type="number"
+            step="0.01"
+            value={account.usd.toFixed(2)}
+            onChange={(e) => updateAccountValue(account.id, 'usd', parseFloat(e.target.value) || 0)}
+            className="text-right border-none bg-transparent focus:bg-background"
+          />
+        </td>
+        <td className="p-2">
+          <Input
+            type="number"
+            step="0.01"
+            value={account.brl.toFixed(2)}
+            onChange={(e) => updateAccountValue(account.id, 'brl', parseFloat(e.target.value) || 0)}
+            className="text-right border-none bg-transparent focus:bg-background"
+          />
+        </td>
+        <td className="p-2">
+          <Input
+            type="number"
+            step="0.01"
+            value={account.eur.toFixed(2)}
+            onChange={(e) => updateAccountValue(account.id, 'eur', parseFloat(e.target.value) || 0)}
+            className="text-right border-none bg-transparent focus:bg-background"
+          />
+        </td>
+        {previousWeek && (
+          <>
+            <td className="p-2 text-right text-muted-foreground">
+              {prevAccount ? formatCurrency(prevAccount.usd, 'USD') : '-'}
+            </td>
+            <td className="p-2 text-right text-muted-foreground">
+              {prevAccount ? formatCurrency(prevAccount.brl, 'BRL') : '-'}
+            </td>
+            <td className="p-2 text-right text-muted-foreground">
+              {prevAccount ? formatCurrency(prevAccount.eur, 'EUR') : '-'}
+            </td>
+          </>
+        )}
+        <td className="p-2 text-center">
+          <Button
+            onClick={() => removeAccount(account.id)}
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </td>
+      </tr>
+    );
+  }
+
 
 
   const getTotalPortfolioInBrl = () => {
@@ -463,94 +590,47 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-2 font-medium">Account</th>
-                        <th className="text-right p-2 font-medium">USD</th>
-                        <th className="text-right p-2 font-medium">BRL</th>
-                        <th className="text-right p-2 font-medium">EUR</th>
-                        {previousWeek && (
-                          <>
-                            <th className="text-right p-2 font-medium text-muted-foreground">USD Prev.</th>
-                            <th className="text-right p-2 font-medium text-muted-foreground">BRL Prev.</th>
-                            <th className="text-right p-2 font-medium text-muted-foreground">EUR Prev.</th>
-                          </>
-                        )}
-                        <th className="text-center p-2 font-medium">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentWeek.accounts.map((account, index) => {
-                        const prevAccount = previousWeek?.accounts.find(acc => acc.name === account.name);
-                        return (
-                          <tr key={account.id} className="border-b hover:bg-muted/50">
-                            <td className="p-2">
-                              <Input
-                                value={account.name}
-                                onChange={(e) => updateAccountName(account.id, e.target.value)}
-                                className="font-medium border-none bg-transparent focus:bg-background"
-                                placeholder="Nome da conta"
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-2 font-medium">Account</th>
+                          <th className="text-right p-2 font-medium">USD</th>
+                          <th className="text-right p-2 font-medium">BRL</th>
+                          <th className="text-right p-2 font-medium">EUR</th>
+                          {previousWeek && (
+                            <>
+                              <th className="text-right p-2 font-medium text-muted-foreground">USD Prev.</th>
+                              <th className="text-right p-2 font-medium text-muted-foreground">BRL Prev.</th>
+                              <th className="text-right p-2 font-medium text-muted-foreground">EUR Prev.</th>
+                            </>
+                          )}
+                          <th className="text-center p-2 font-medium">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <SortableContext 
+                          items={currentWeek.accounts.map(acc => acc.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {currentWeek.accounts.map((account) => {
+                            const prevAccount = previousWeek?.accounts.find(acc => acc.name === account.name);
+                            return (
+                              <SortableRow
+                                key={account.id}
+                                account={account}
+                                prevAccount={prevAccount}
                               />
-                            </td>
-                            <td className="p-2">
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={account.usd || ''}
-                                onChange={(e) => updateAccountValue(account.id, 'usd', parseFloat(e.target.value) || 0)}
-                                className="w-full text-right"
-                                placeholder="0.00"
-                              />
-                            </td>
-                            <td className="p-2">
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={account.brl || ''}
-                                onChange={(e) => updateAccountValue(account.id, 'brl', parseFloat(e.target.value) || 0)}
-                                className="w-full text-right"
-                                placeholder="0.00"
-                              />
-                            </td>
-                            <td className="p-2">
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={account.eur || ''}
-                                onChange={(e) => updateAccountValue(account.id, 'eur', parseFloat(e.target.value) || 0)}
-                                className="w-full text-right"
-                                placeholder="0.00"
-                              />
-                            </td>
-                            {previousWeek && (
-                              <>
-                                <td className="p-2 text-right text-muted-foreground text-sm">
-                                  {prevAccount ? formatCurrency(prevAccount.usd, 'USD') : '-'}
-                                </td>
-                                <td className="p-2 text-right text-muted-foreground text-sm">
-                                  {prevAccount ? formatCurrency(prevAccount.brl, 'BRL') : '-'}
-                                </td>
-                                <td className="p-2 text-right text-muted-foreground text-sm">
-                                  {prevAccount ? formatCurrency(prevAccount.eur, 'EUR') : '-'}
-                                </td>
-                              </>
-                            )}
-                            <td className="p-2 text-center">
-                              <Button
-                                onClick={() => removeAccount(account.id)}
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                            );
+                          })}
+                        </SortableContext>
+                      </tbody>
+                    </table>
+                  </DndContext>
                 </div>
               </CardContent>
             </Card>
