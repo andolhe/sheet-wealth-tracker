@@ -256,20 +256,21 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     const nextMonday = new Date();
     nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
     
+    // Copy accounts with their current values
+    const copiedAccounts = accountsToCopy.map((account, index) => ({
+      ...account,
+      id: `account-${Date.now()}-${index}`
+    }));
+    
+    // Calculate totals for the new week with copied values
+    const totals = calculateTotals(copiedAccounts);
+    
     setCurrentWeek({
       id: '',
       date: nextMonday.toISOString().split('T')[0],
       rates: currentWeek.rates, // Keep previous week rates
-      accounts: accountsToCopy.map((account, index) => ({
-        ...account,
-        id: `account-${Date.now()}-${index}`,
-        usd: 0,
-        brl: 0,
-        eur: 0
-      })),
-      totalUsd: 0,
-      totalBrl: 0,
-      totalEur: 0
+      accounts: copiedAccounts,
+      ...totals
     });
     
     // Set previous week AFTER setting new current week
