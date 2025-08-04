@@ -33,9 +33,6 @@ interface AnalyticsDashboardProps {
 }
 
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onClose }) => {
-  // Debug: Log the savedWeeks data
-  console.log('Saved weeks data:', savedWeeks);
-  const [currency, setCurrency] = useState<'USD' | 'BRL'>('BRL');
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [chartType, setChartType] = useState<'bar' | 'line'>('line');
 
@@ -52,33 +49,47 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
     return Array.from(accountNames).sort();
   }, [savedWeeks]);
 
-  // Convert value to selected currency
-  const convertToCurrency = (usd: number, brl: number, eur: number, rates: WeeklyData['rates']) => {
-    if (currency === 'USD') {
-      return usd + (brl / rates.usdToBrl) + (eur * rates.eurToBrl / rates.usdToBrl);
-    } else {
-      return brl + (usd * rates.usdToBrl) + (eur * rates.eurToBrl);
-    }
+  // Convert value to USD
+  const convertToUSD = (usd: number, brl: number, eur: number, rates: WeeklyData['rates']) => {
+    return usd + (brl / rates.usdToBrl) + (eur * rates.eurToBrl / rates.usdToBrl);
   };
 
-  // Prepare data for total evolution chart
-  const totalEvolutionData = useMemo(() => {
-    const data = savedWeeks.map((week, index) => {
-      const totalValue = convertToCurrency(week.totalUsd, week.totalBrl, week.totalEur, week.rates);
+  // Convert value to BRL
+  const convertToBRL = (usd: number, brl: number, eur: number, rates: WeeklyData['rates']) => {
+    return brl + (usd * rates.usdToBrl) + (eur * rates.eurToBrl);
+  };
+
+  // Prepare data for USD evolution chart
+  const usdEvolutionData = useMemo(() => {
+    return savedWeeks.map((week, index) => {
+      const totalValueUSD = convertToUSD(week.totalUsd, week.totalBrl, week.totalEur, week.rates);
       const prevWeek = index > 0 ? savedWeeks[index - 1] : null;
-      const prevValue = prevWeek ? convertToCurrency(prevWeek.totalUsd, prevWeek.totalBrl, prevWeek.totalEur, prevWeek.rates) : totalValue;
-      const variation = prevValue > 0 ? ((totalValue - prevValue) / prevValue) * 100 : 0;
+      const prevValueUSD = prevWeek ? convertToUSD(prevWeek.totalUsd, prevWeek.totalBrl, prevWeek.totalEur, prevWeek.rates) : totalValueUSD;
+      const variationUSD = prevValueUSD > 0 ? ((totalValueUSD - prevValueUSD) / prevValueUSD) * 100 : 0;
 
       return {
         date: new Date(week.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        total: Math.round(totalValue),
-        variation: variation
+        total: Math.round(totalValueUSD),
+        variation: variationUSD
       };
     });
-    
-    console.log('Total evolution data:', data);
-    return data;
-  }, [savedWeeks, currency]);
+  }, [savedWeeks]);
+
+  // Prepare data for BRL evolution chart
+  const brlEvolutionData = useMemo(() => {
+    return savedWeeks.map((week, index) => {
+      const totalValueBRL = convertToBRL(week.totalUsd, week.totalBrl, week.totalEur, week.rates);
+      const prevWeek = index > 0 ? savedWeeks[index - 1] : null;
+      const prevValueBRL = prevWeek ? convertToBRL(prevWeek.totalUsd, prevWeek.totalBrl, prevWeek.totalEur, prevWeek.rates) : totalValueBRL;
+      const variationBRL = prevValueBRL > 0 ? ((totalValueBRL - prevValueBRL) / prevValueBRL) * 100 : 0;
+
+      return {
+        date: new Date(week.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        total: Math.round(totalValueBRL),
+        variation: variationBRL
+      };
+    });
+  }, [savedWeeks]);
 
   // Prepare data for account evolution chart
   const accountEvolutionData = useMemo(() => {
@@ -92,7 +103,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
       accountsToShow.forEach(accountName => {
         const account = week.accounts.find(acc => acc.name === accountName);
         if (account) {
-          dataPoint[accountName] = convertToCurrency(account.usd, account.brl, account.eur, week.rates);
+          dataPoint[accountName] = convertToBRL(account.usd, account.brl, account.eur, week.rates);
         } else {
           dataPoint[accountName] = 0;
         }
@@ -100,7 +111,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
 
       return dataPoint;
     });
-  }, [savedWeeks, selectedAccounts, allAccounts, currency]);
+  }, [savedWeeks, selectedAccounts, allAccounts]);
 
   // Calculate overall statistics
   const overallStats = useMemo(() => {
@@ -109,20 +120,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
     const firstWeek = savedWeeks[0];
     const lastWeek = savedWeeks[savedWeeks.length - 1];
     
-    const firstTotal = convertToCurrency(firstWeek.totalUsd, firstWeek.totalBrl, firstWeek.totalEur, firstWeek.rates);
-    const lastTotal = convertToCurrency(lastWeek.totalUsd, lastWeek.totalBrl, lastWeek.totalEur, lastWeek.rates);
+    const firstTotalBRL = convertToBRL(firstWeek.totalUsd, firstWeek.totalBrl, firstWeek.totalEur, firstWeek.rates);
+    const lastTotalBRL = convertToBRL(lastWeek.totalUsd, lastWeek.totalBrl, lastWeek.totalEur, lastWeek.rates);
     
-    const totalGrowth = firstTotal > 0 ? ((lastTotal - firstTotal) / firstTotal) * 100 : 0;
+    const totalGrowth = firstTotalBRL > 0 ? ((lastTotalBRL - firstTotalBRL) / firstTotalBRL) * 100 : 0;
     const averageWeekly = savedWeeks.length > 1 ? totalGrowth / (savedWeeks.length - 1) : 0;
 
     return {
       totalGrowth,
       averageWeekly,
-      firstTotal,
-      lastTotal,
+      firstTotal: firstTotalBRL,
+      lastTotal: lastTotalBRL,
       weeksTracked: savedWeeks.length
     };
-  }, [savedWeeks, currency]);
+  }, [savedWeeks]);
 
   const toggleAccount = (accountName: string) => {
     setSelectedAccounts(prev => 
@@ -132,10 +143,19 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
     );
   };
 
-  const formatCurrency = (value: number) => {
+  const formatCurrencyBRL = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  const formatCurrencyUSD = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);
@@ -178,19 +198,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
           <Card>
             <CardContent className="p-4">
               <div className="flex flex-wrap gap-4 items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Currency:</span>
-                  <Select value={currency} onValueChange={(value: 'USD' | 'BRL') => setCurrency(value)}>
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="BRL">BRL</SelectItem>
-                      <SelectItem value="USD">USD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">Chart Type:</span>
                   <Select value={chartType} onValueChange={(value: 'bar' | 'line') => setChartType(value)}>
@@ -263,7 +270,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                   <div>
                     <p className="text-sm text-muted-foreground">First Week</p>
                     <p className="text-2xl font-bold text-primary">
-                      {formatCurrency(overallStats.firstTotal)}
+                      {formatCurrencyBRL(overallStats.firstTotal)}
                     </p>
                   </div>
                 </CardContent>
@@ -274,7 +281,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                   <div>
                     <p className="text-sm text-muted-foreground">Latest Week</p>
                     <p className="text-2xl font-bold text-primary">
-                      {formatCurrency(overallStats.lastTotal)}
+                      {formatCurrencyBRL(overallStats.lastTotal)}
                     </p>
                   </div>
                 </CardContent>
@@ -282,18 +289,18 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
             </div>
           )}
 
-          {/* Portfolio Evolution Chart */}
+          {/* Portfolio Evolution in USD */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {chartType === 'line' ? <LineChartIcon className="h-5 w-5" /> : <BarChart3 className="h-5 w-5" />}
-                Portfolio Evolution ({currency})
+                Evolução do Portfolio (USD)
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                  {chartType === 'line' ? (
-                   <LineChart data={totalEvolutionData}>
+                   <LineChart data={usdEvolutionData}>
                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                      <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
                      <YAxis stroke="hsl(var(--foreground))" />
@@ -304,8 +311,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                          borderRadius: '6px'
                        }}
                         formatter={(value: any, name: string) => [
-                          formatCurrency(value),
-                          `Total Portfolio (${currency})`
+                          formatCurrencyUSD(value),
+                          'Total Portfolio (USD)'
                         ]}
                      />
                      <Legend 
@@ -317,11 +324,11 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                        stroke="hsl(var(--primary))" 
                        strokeWidth={3}
                        dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
-                       name={`Total Portfolio (${currency})`}
+                       name="Total Portfolio (USD)"
                      />
                    </LineChart>
                 ) : (
-                  <BarChart data={totalEvolutionData}>
+                  <BarChart data={usdEvolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
                     <YAxis stroke="hsl(var(--foreground))" />
@@ -331,6 +338,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '6px'
                       }}
+                      formatter={(value: any) => [formatCurrencyUSD(value), 'Total Portfolio']}
                     />
                     <Bar dataKey="total" fill="hsl(var(--primary))" />
                   </BarChart>
@@ -339,14 +347,72 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
             </CardContent>
           </Card>
 
-          {/* Weekly Variation Chart */}
+          {/* Portfolio Evolution in BRL */}
           <Card>
             <CardHeader>
-              <CardTitle>Weekly Percentage Variation</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                {chartType === 'line' ? <LineChartIcon className="h-5 w-5" /> : <BarChart3 className="h-5 w-5" />}
+                Evolução do Portfolio (BRL)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={400}>
+                 {chartType === 'line' ? (
+                   <LineChart data={brlEvolutionData}>
+                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                     <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
+                     <YAxis stroke="hsl(var(--foreground))" />
+                     <Tooltip 
+                       contentStyle={{
+                         backgroundColor: 'hsl(var(--card))',
+                         border: '1px solid hsl(var(--border))',
+                         borderRadius: '6px'
+                       }}
+                        formatter={(value: any, name: string) => [
+                          formatCurrencyBRL(value),
+                          'Total Portfolio (BRL)'
+                        ]}
+                     />
+                     <Legend 
+                       wrapperStyle={{ color: 'hsl(var(--foreground))' }}
+                     />
+                     <Line 
+                       type="monotone" 
+                       dataKey="total" 
+                       stroke="hsl(var(--success))" 
+                       strokeWidth={3}
+                       dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 4 }}
+                       name="Total Portfolio (BRL)"
+                     />
+                   </LineChart>
+                ) : (
+                  <BarChart data={brlEvolutionData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
+                    <YAxis stroke="hsl(var(--foreground))" />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '6px'
+                      }}
+                      formatter={(value: any) => [formatCurrencyBRL(value), 'Total Portfolio']}
+                    />
+                    <Bar dataKey="total" fill="hsl(var(--success))" />
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Weekly Variation Chart - BRL */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Variação Semanal Percentual (BRL)</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={totalEvolutionData}>
+                <BarChart data={brlEvolutionData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
                   <YAxis stroke="hsl(var(--foreground))" />
@@ -356,10 +422,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '6px'
                     }}
-                    formatter={(value: any) => [`${value.toFixed(2)}%`, 'Variation']}
+                    formatter={(value: any) => [`${value.toFixed(2)}%`, 'Variação']}
                   />
                   <Bar dataKey="variation">
-                    {totalEvolutionData.map((entry, index) => (
+                    {brlEvolutionData.map((entry, index) => (
                       <rect
                         key={`cell-${index}`}
                         fill={entry.variation >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
@@ -377,8 +443,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  Account Evolution ({currency})
-                  <Badge variant="secondary">{selectedAccounts.length || 'Top 5'} accounts</Badge>
+                  Evolução das Contas (BRL)
+                  <Badge variant="secondary">{selectedAccounts.length || 'Top 5'} contas</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
