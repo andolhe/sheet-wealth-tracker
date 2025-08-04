@@ -243,6 +243,9 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
   };
 
   const createNewWeek = () => {
+    // Only copy accounts if current week has any
+    const accountsToCopy = currentWeek.accounts.length > 0 ? currentWeek.accounts : [];
+    
     // Save current week as previous before creating new one
     const currentAsReference = { ...currentWeek };
     
@@ -253,9 +256,9 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
       id: '',
       date: nextMonday.toISOString().split('T')[0],
       rates: currentWeek.rates, // Keep previous week rates
-      accounts: currentWeek.accounts.map(account => ({
+      accounts: accountsToCopy.map((account, index) => ({
         ...account,
-        id: `account-${Date.now()}-${account.id}`,
+        id: `account-${Date.now()}-${index}`,
         usd: 0,
         brl: 0,
         eur: 0
