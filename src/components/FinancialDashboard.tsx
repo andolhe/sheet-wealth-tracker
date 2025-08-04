@@ -363,7 +363,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            value={account.usd > 0 ? account.usd.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
+            value={account.usd && account.usd !== 0 ? account.usd.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
             onChange={(e) => {
               if (e.target.value === '') {
                 updateAccountValue(account.id, 'usd', 0);
@@ -376,13 +376,13 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
               }
             }}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0,00"
+            placeholder=""
           />
         </td>
         <td className="p-2">
           <Input
             type="text"
-            value={account.brl > 0 ? account.brl.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
+            value={account.brl && account.brl !== 0 ? account.brl.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
             onChange={(e) => {
               if (e.target.value === '') {
                 updateAccountValue(account.id, 'brl', 0);
@@ -395,13 +395,13 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
               }
             }}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0,00"
+            placeholder=""
           />
         </td>
         <td className="p-2">
           <Input
             type="text"
-            value={account.eur > 0 ? account.eur.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
+            value={account.eur && account.eur !== 0 ? account.eur.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
             onChange={(e) => {
               if (e.target.value === '') {
                 updateAccountValue(account.id, 'eur', 0);
@@ -414,7 +414,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
               }
             }}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0,00"
+            placeholder=""
           />
         </td>
         {previousWeek && (
