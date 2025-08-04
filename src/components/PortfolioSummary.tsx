@@ -113,27 +113,10 @@ export const PortfolioSummary = () => {
     return Number(value).toFixed(2);
   };
 
-  const getTotalPortfolioInBrl = () => {
-    return latestWeek.totalBrl + 
-           (latestWeek.totalUsd * latestWeek.rates.usdToBrl) + 
-           (latestWeek.totalEur * latestWeek.rates.eurToBrl);
-  };
-
-  const getTotalPortfolioInUsd = () => {
-    return (latestWeek.totalBrl / latestWeek.rates.usdToBrl) + 
-           latestWeek.totalUsd + 
-           (latestWeek.totalEur * latestWeek.rates.eurToBrl / latestWeek.rates.usdToBrl);
-  };
-
-  const getTotalPortfolioInEur = () => {
-    return (latestWeek.totalBrl / latestWeek.rates.eurToBrl) + 
-           (latestWeek.totalUsd * latestWeek.rates.usdToBrl / latestWeek.rates.eurToBrl) + 
-           latestWeek.totalEur;
-  };
-
-  const currentTotalBrl = getTotalPortfolioInBrl();
-  const currentTotalUsd = getTotalPortfolioInUsd();
-  const currentTotalEur = getTotalPortfolioInEur();
+  // Use the direct totals from the saved week data
+  const currentTotalBrl = latestWeek.totalBrl;
+  const currentTotalUsd = latestWeek.totalUsd;
+  const currentTotalEur = latestWeek.totalEur;
 
   // Calculate trends
   const getTrend = (current: number, previous: number) => {
@@ -147,9 +130,7 @@ export const PortfolioSummary = () => {
 
   const getPreviousTotalInBrl = () => {
     if (!previousWeek) return 0;
-    return previousWeek.totalBrl + 
-           (previousWeek.totalUsd * previousWeek.rates.usdToBrl) + 
-           (previousWeek.totalEur * previousWeek.rates.eurToBrl);
+    return previousWeek.totalBrl;
   };
 
   const trendBrl = getTrend(currentTotalBrl, getPreviousTotalInBrl());
