@@ -362,32 +362,59 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         </td>
         <td className="p-2">
           <Input
-            type="number"
-            step="0.01"
-            value={account.usd || ''}
-            onChange={(e) => updateAccountValue(account.id, 'usd', parseFloat(e.target.value) || 0)}
+            type="text"
+            value={account.usd > 0 ? account.usd.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
+            onChange={(e) => {
+              if (e.target.value === '') {
+                updateAccountValue(account.id, 'usd', 0);
+                return;
+              }
+              const cleanValue = e.target.value.replace(/\./g, '').replace(',', '.');
+              const numValue = parseFloat(cleanValue);
+              if (!isNaN(numValue)) {
+                updateAccountValue(account.id, 'usd', numValue);
+              }
+            }}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0.00"
+            placeholder="0,00"
           />
         </td>
         <td className="p-2">
           <Input
-            type="number"
-            step="0.01"
-            value={account.brl || ''}
-            onChange={(e) => updateAccountValue(account.id, 'brl', parseFloat(e.target.value) || 0)}
+            type="text"
+            value={account.brl > 0 ? account.brl.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
+            onChange={(e) => {
+              if (e.target.value === '') {
+                updateAccountValue(account.id, 'brl', 0);
+                return;
+              }
+              const cleanValue = e.target.value.replace(/\./g, '').replace(',', '.');
+              const numValue = parseFloat(cleanValue);
+              if (!isNaN(numValue)) {
+                updateAccountValue(account.id, 'brl', numValue);
+              }
+            }}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0.00"
+            placeholder="0,00"
           />
         </td>
         <td className="p-2">
           <Input
-            type="number"
-            step="0.01"
-            value={account.eur || ''}
-            onChange={(e) => updateAccountValue(account.id, 'eur', parseFloat(e.target.value) || 0)}
+            type="text"
+            value={account.eur > 0 ? account.eur.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}
+            onChange={(e) => {
+              if (e.target.value === '') {
+                updateAccountValue(account.id, 'eur', 0);
+                return;
+              }
+              const cleanValue = e.target.value.replace(/\./g, '').replace(',', '.');
+              const numValue = parseFloat(cleanValue);
+              if (!isNaN(numValue)) {
+                updateAccountValue(account.id, 'eur', numValue);
+              }
+            }}
             className="text-right border-none bg-transparent focus:bg-background"
-            placeholder="0.00"
+            placeholder="0,00"
           />
         </td>
         {previousWeek && (
