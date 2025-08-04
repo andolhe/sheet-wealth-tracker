@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit, Settings, GripVertical } from 'lucide-react';
+import { Calendar, Save, Plus, TrendingUp, DollarSign, Euro, Bitcoin, BarChart3, Trash2, X, Edit, Settings, GripVertical, Edit2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import {
@@ -305,6 +306,32 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     toast({
       title: "All data cleared!",
       description: "All financial data has been permanently deleted.",
+    });
+  };
+
+  const editWeek = (weekId: string) => {
+    const weekToEdit = savedWeeks.find(week => week.id === weekId);
+    if (weekToEdit) {
+      setCurrentWeek(weekToEdit);
+      setActiveTab('current');
+      toast({
+        title: "Week loaded for editing",
+        description: `Week ${weekToEdit.date} has been loaded for editing.`,
+      });
+    }
+  };
+
+  const deleteWeek = (weekId: string) => {
+    const updatedWeeks = savedWeeks.filter(week => week.id !== weekId);
+    setSavedWeeks(updatedWeeks);
+    localStorage.setItem('financialWeeks', JSON.stringify(updatedWeeks));
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('financialDataUpdated'));
+    
+    toast({
+      title: "Week deleted",
+      description: "The selected week has been permanently deleted.",
     });
   };
 
@@ -692,41 +719,81 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {savedWeeks.reverse().map((week) => (
-                      <div key={week.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium">Week of {new Date(week.date).toLocaleDateString('pt-BR')}</h3>
-                          <Badge variant="outline">
-                            {formatCurrency(
-                              week.totalBrl + 
-                              (week.totalUsd * week.rates.usdToBrl) + 
-                              (week.totalEur * week.rates.eurToBrl), 
-                              'BRL'
-                            )}
-                          </Badge>
-                        </div>
-                        <div className="grid grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">USD: </span>
-                            <span className="font-medium">{formatCurrency(week.totalUsd, 'USD')}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">BRL: </span>
-                            <span className="font-medium">{formatCurrency(week.totalBrl, 'BRL')}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">EUR: </span>
-                            <span className="font-medium">{formatCurrency(week.totalEur, 'EUR')}</span>
-                          </div>
-                        </div>
-                        <Separator className="my-2" />
-                        <div className="grid grid-cols-3 gap-4 text-xs text-muted-foreground">
-                          <div>USD/BRL: {week.rates.usdToBrl}</div>
-                          <div>EUR/BRL: {week.rates.eurToBrl}</div>
-                          <div>BTC/USD: {week.rates.btcToUsd?.toLocaleString('en-US') || 'N/A'}</div>
-                        </div>
-                      </div>
-                    ))}
+                     {savedWeeks.reverse().map((week) => (
+                       <div key={week.id} className="border rounded-lg p-4">
+                         <div className="flex items-center justify-between mb-2">
+                           <h3 className="font-medium">Week of {new Date(week.date).toLocaleDateString('pt-BR')}</h3>
+                           <div className="flex items-center gap-2">
+                             <Badge variant="outline">
+                               {formatCurrency(
+                                 week.totalBrl + 
+                                 (week.totalUsd * week.rates.usdToBrl) + 
+                                 (week.totalEur * week.rates.eurToBrl), 
+                                 'BRL'
+                               )}
+                             </Badge>
+                             <Button 
+                               onClick={() => editWeek(week.id)} 
+                               size="sm" 
+                               variant="outline" 
+                               className="gap-1 h-7"
+                             >
+                               <Edit2 className="h-3 w-3" />
+                               Edit
+                             </Button>
+                             <AlertDialog>
+                               <AlertDialogTrigger asChild>
+                                 <Button 
+                                   size="sm" 
+                                   variant="outline" 
+                                   className="gap-1 h-7 text-destructive hover:text-destructive"
+                                 >
+                                   <Trash2 className="h-3 w-3" />
+                                   Delete
+                                 </Button>
+                               </AlertDialogTrigger>
+                               <AlertDialogContent>
+                                 <AlertDialogHeader>
+                                   <AlertDialogTitle>Delete Week</AlertDialogTitle>
+                                   <AlertDialogDescription>
+                                     Are you sure you want to delete the week of {new Date(week.date).toLocaleDateString('pt-BR')}? This action cannot be undone.
+                                   </AlertDialogDescription>
+                                 </AlertDialogHeader>
+                                 <AlertDialogFooter>
+                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                   <AlertDialogAction 
+                                     onClick={() => deleteWeek(week.id)}
+                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                   >
+                                     Delete
+                                   </AlertDialogAction>
+                                 </AlertDialogFooter>
+                               </AlertDialogContent>
+                             </AlertDialog>
+                           </div>
+                         </div>
+                         <div className="grid grid-cols-3 gap-4 text-sm">
+                           <div>
+                             <span className="text-muted-foreground">USD: </span>
+                             <span className="font-medium">{formatCurrency(week.totalUsd, 'USD')}</span>
+                           </div>
+                           <div>
+                             <span className="text-muted-foreground">BRL: </span>
+                             <span className="font-medium">{formatCurrency(week.totalBrl, 'BRL')}</span>
+                           </div>
+                           <div>
+                             <span className="text-muted-foreground">EUR: </span>
+                             <span className="font-medium">{formatCurrency(week.totalEur, 'EUR')}</span>
+                           </div>
+                         </div>
+                         <Separator className="my-2" />
+                         <div className="grid grid-cols-3 gap-4 text-xs text-muted-foreground">
+                           <div>USD/BRL: {week.rates.usdToBrl}</div>
+                           <div>EUR/BRL: {week.rates.eurToBrl}</div>
+                           <div>BTC/USD: {week.rates.btcToUsd?.toLocaleString('en-US') || 'N/A'}</div>
+                         </div>
+                       </div>
+                     ))}
                   </div>
                 )}
               </CardContent>
