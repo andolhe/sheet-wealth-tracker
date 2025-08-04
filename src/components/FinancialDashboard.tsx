@@ -224,8 +224,12 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
   };
 
   const saveCurrentWeek = () => {
+    // Recalculate totals before saving to ensure accuracy
+    const totals = calculateTotals(currentWeek.accounts);
+    
     const weekToSave = {
       ...currentWeek,
+      ...totals,
       id: `week-${Date.now()}`
     };
     
