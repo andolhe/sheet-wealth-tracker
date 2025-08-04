@@ -362,30 +362,42 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         </td>
         <td className="p-2">
           <Input
-            type="number"
-            step="0.01"
-            value={account.usd && account.usd !== 0 ? parseFloat(account.usd.toFixed(2)) : ''}
-            onChange={(e) => updateAccountValue(account.id, 'usd', parseFloat(e.target.value) || 0)}
+            type="text"
+            value={account.usd && account.usd !== 0 ? account.usd.toString() : ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                updateAccountValue(account.id, 'usd', parseFloat(value) || 0);
+              }
+            }}
             className="text-right border-none bg-transparent focus:bg-background"
             placeholder=""
           />
         </td>
         <td className="p-2">
           <Input
-            type="number"
-            step="0.01"
-            value={account.brl && account.brl !== 0 ? parseFloat(account.brl.toFixed(2)) : ''}
-            onChange={(e) => updateAccountValue(account.id, 'brl', parseFloat(e.target.value) || 0)}
+            type="text"
+            value={account.brl && account.brl !== 0 ? account.brl.toString() : ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                updateAccountValue(account.id, 'brl', parseFloat(value) || 0);
+              }
+            }}
             className="text-right border-none bg-transparent focus:bg-background"
             placeholder=""
           />
         </td>
         <td className="p-2">
           <Input
-            type="number"
-            step="0.01"
-            value={account.eur && account.eur !== 0 ? parseFloat(account.eur.toFixed(2)) : ''}
-            onChange={(e) => updateAccountValue(account.id, 'eur', parseFloat(e.target.value) || 0)}
+            type="text"
+            value={account.eur && account.eur !== 0 ? account.eur.toString() : ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                updateAccountValue(account.id, 'eur', parseFloat(value) || 0);
+              }
+            }}
             className="text-right border-none bg-transparent focus:bg-background"
             placeholder=""
           />
