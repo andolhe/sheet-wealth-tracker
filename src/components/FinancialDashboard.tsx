@@ -268,7 +268,7 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     
     toast({
       title: "New week created!",
-      description: "Values cleared, exchange rates kept as reference.",
+      description: "Previous accounts copied with values reset. Exchange rates maintained.",
     });
   };
 
