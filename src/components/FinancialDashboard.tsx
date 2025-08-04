@@ -363,8 +363,8 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            value={account.usd && account.usd !== 0 ? account.usd.toString() : ''}
-            onChange={(e) => {
+            defaultValue={account.usd && account.usd !== 0 ? account.usd.toString() : ''}
+            onBlur={(e) => {
               const value = e.target.value;
               if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
                 updateAccountValue(account.id, 'usd', parseFloat(value) || 0);
@@ -377,8 +377,8 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            value={account.brl && account.brl !== 0 ? account.brl.toString() : ''}
-            onChange={(e) => {
+            defaultValue={account.brl && account.brl !== 0 ? account.brl.toString() : ''}
+            onBlur={(e) => {
               const value = e.target.value;
               if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
                 updateAccountValue(account.id, 'brl', parseFloat(value) || 0);
@@ -391,8 +391,8 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
         <td className="p-2">
           <Input
             type="text"
-            value={account.eur && account.eur !== 0 ? account.eur.toString() : ''}
-            onChange={(e) => {
+            defaultValue={account.eur && account.eur !== 0 ? account.eur.toString() : ''}
+            onBlur={(e) => {
               const value = e.target.value;
               if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
                 updateAccountValue(account.id, 'eur', parseFloat(value) || 0);
