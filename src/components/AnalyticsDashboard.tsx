@@ -293,26 +293,35 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                {chartType === 'line' ? (
-                  <LineChart data={totalEvolutionData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
-                    <YAxis stroke="hsl(var(--foreground))" />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '6px'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="total" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
-                    />
-                  </LineChart>
+                 {chartType === 'line' ? (
+                   <LineChart data={totalEvolutionData}>
+                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                     <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
+                     <YAxis stroke="hsl(var(--foreground))" />
+                     <Tooltip 
+                       contentStyle={{
+                         backgroundColor: 'hsl(var(--card))',
+                         border: '1px solid hsl(var(--border))',
+                         borderRadius: '6px'
+                       }}
+                        formatter={(value: any, name: string) => [
+                          formatCurrency(value),
+                          `Total Portfolio (${currency})`
+                        ]}
+                     />
+                     <Legend 
+                       wrapperStyle={{ color: 'hsl(var(--foreground))' }}
+                       formatter={() => `Total Portfolio (${currency})`}
+                     />
+                     <Line 
+                       type="monotone" 
+                       dataKey="total" 
+                       stroke="hsl(var(--primary))" 
+                       strokeWidth={3}
+                       dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
+                       name={`Total Portfolio (${currency})`}
+                     />
+                   </LineChart>
                 ) : (
                   <BarChart data={totalEvolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
