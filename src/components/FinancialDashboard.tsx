@@ -248,11 +248,12 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
   };
 
   const createNewWeek = () => {
-    // Only copy accounts if current week has any
-    const accountsToCopy = currentWeek.accounts.length > 0 ? currentWeek.accounts : [];
+    // Get the last saved week to use as reference
+    const lastSavedWeek = savedWeeks.length > 0 ? savedWeeks[savedWeeks.length - 1] : null;
+    const referenceWeek = lastSavedWeek || currentWeek;
     
-    // Save current week as previous before creating new one
-    const currentAsReference = { ...currentWeek };
+    // Copy accounts from the reference week
+    const accountsToCopy = referenceWeek.accounts || [];
     
     const nextMonday = new Date();
     nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
@@ -269,19 +270,19 @@ const FinancialDashboard = ({ onBack }: { onBack?: () => void }) => {
     setCurrentWeek({
       id: '',
       date: nextMonday.toISOString().split('T')[0],
-      rates: currentWeek.rates, // Keep previous week rates
+      rates: referenceWeek.rates, // Keep previous week rates
       accounts: copiedAccounts,
       ...totals
     });
     
-    // Set previous week AFTER setting new current week
-    setPreviousWeek(currentAsReference);
+    // Set previous week
+    setPreviousWeek(referenceWeek);
     
     setActiveTab('current');
     
     toast({
       title: "New week created!",
-      description: "Previous accounts copied with values reset. Exchange rates maintained.",
+      description: "Accounts and values copied from last saved week.",
     });
   };
 
