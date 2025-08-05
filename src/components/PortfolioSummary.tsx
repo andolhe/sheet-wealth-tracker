@@ -246,13 +246,13 @@ export const PortfolioSummary = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Evolução do Portfolio (BRL / USD)
+                Evolução do Portfolio (USD)
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
+                  <LineChart data={chartData} margin={{ left: 0, right: 40, top: 5, bottom: 5 }}>
                     <XAxis 
                       dataKey="week" 
                       tick={{ fontSize: 12 }}
@@ -260,33 +260,20 @@ export const PortfolioSummary = () => {
                       tickLine={false}
                     />
                     <YAxis 
-                      yAxisId="brl"
-                      orientation="left"
-                      tick={{ fontSize: 12 }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                    />
-                    <YAxis 
-                      yAxisId="usd"
                       orientation="right"
                       tick={{ fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                      tickFormatter={(value) => {
+                        if (value >= 1000000) {
+                          return `${(value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1)}M`;
+                        } else if (value >= 1000) {
+                          return `${(value / 1000).toFixed(value % 1000 === 0 ? 0 : 1)}K`;
+                        }
+                        return value.toString();
+                      }}
                     />
                     <Line 
-                      yAxisId="brl"
-                      type="monotone" 
-                      dataKey="totalBrl" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, stroke: "hsl(var(--primary))", strokeWidth: 2 }}
-                      name="BRL"
-                    />
-                    <Line 
-                      yAxisId="usd"
                       type="monotone" 
                       dataKey="totalUsd" 
                       stroke="hsl(142, 76%, 36%)" 
