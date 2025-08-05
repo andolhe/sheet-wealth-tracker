@@ -309,12 +309,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                  {chartType === 'line' ? (
-                   <LineChart data={usdEvolutionData}>
+                   <LineChart data={usdEvolutionData} margin={{ left: 20, right: 20 }}>
                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                      <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
                      <YAxis 
                        stroke="hsl(var(--foreground))" 
                        tickFormatter={formatCurrencyUSDCompact}
+                       orientation="left"
                      />
                      <Tooltip 
                        contentStyle={{
