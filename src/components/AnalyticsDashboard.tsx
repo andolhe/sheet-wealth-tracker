@@ -161,6 +161,15 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
     }).format(value);
   };
 
+  const formatCurrencyUSDCompact = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(0)}K`;
+    }
+    return `$${value.toFixed(0)}`;
+  };
+
   if (savedWeeks.length === 0) {
     return (
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -303,7 +312,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                    <LineChart data={usdEvolutionData}>
                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                      <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
-                     <YAxis stroke="hsl(var(--foreground))" />
+                     <YAxis 
+                       stroke="hsl(var(--foreground))" 
+                       tickFormatter={formatCurrencyUSDCompact}
+                     />
                      <Tooltip 
                        contentStyle={{
                          backgroundColor: 'hsl(var(--card))',
@@ -331,7 +343,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                   <BarChart data={usdEvolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
-                    <YAxis stroke="hsl(var(--foreground))" />
+                    <YAxis 
+                      stroke="hsl(var(--foreground))" 
+                      tickFormatter={formatCurrencyUSDCompact}
+                    />
                     <Tooltip 
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -341,64 +356,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                       formatter={(value: any) => [formatCurrencyUSD(value), 'Total Portfolio']}
                     />
                     <Bar dataKey="total" fill="hsl(var(--primary))" />
-                  </BarChart>
-                )}
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Portfolio Evolution in BRL */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {chartType === 'line' ? <LineChartIcon className="h-5 w-5" /> : <BarChart3 className="h-5 w-5" />}
-                Evolução do Portfolio (BRL)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                 {chartType === 'line' ? (
-                   <LineChart data={brlEvolutionData}>
-                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                     <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
-                     <YAxis stroke="hsl(var(--foreground))" />
-                     <Tooltip 
-                       contentStyle={{
-                         backgroundColor: 'hsl(var(--card))',
-                         border: '1px solid hsl(var(--border))',
-                         borderRadius: '6px'
-                       }}
-                        formatter={(value: any, name: string) => [
-                          formatCurrencyBRL(value),
-                          'Total Portfolio (BRL)'
-                        ]}
-                     />
-                     <Legend 
-                       wrapperStyle={{ color: 'hsl(var(--foreground))' }}
-                     />
-                     <Line 
-                       type="monotone" 
-                       dataKey="total" 
-                       stroke="hsl(var(--success))" 
-                       strokeWidth={3}
-                       dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 4 }}
-                       name="Total Portfolio (BRL)"
-                     />
-                   </LineChart>
-                ) : (
-                  <BarChart data={brlEvolutionData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
-                    <YAxis stroke="hsl(var(--foreground))" />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '6px'
-                      }}
-                      formatter={(value: any) => [formatCurrencyBRL(value), 'Total Portfolio']}
-                    />
-                    <Bar dataKey="total" fill="hsl(var(--success))" />
                   </BarChart>
                 )}
               </ResponsiveContainer>
