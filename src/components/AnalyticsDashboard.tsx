@@ -315,7 +315,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ savedWeeks, onC
                      <YAxis 
                        stroke="hsl(var(--foreground))" 
                        tickFormatter={formatCurrencyUSDCompact}
-                       orientation="left"
+                       orientation="right"
                      />
                      <Tooltip 
                        contentStyle={{
